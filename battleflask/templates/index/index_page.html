@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+Battleships - The Game
+{% endblock page_title %}
+
+{% block body %}
+{{ super() }}
+
+<div>
+    <form action="{{ url_get_new_game_view }}">
+        <div>
+            <input type="submit" value="New Game"/>
+        </div>
+    </form>
+    <form action="{{ url_get_join_game_view }}">
+        <div>
+            <input type="submit" value="Join the Game"/>
+        </div>
+    </form>
+</div>
+
+{% endblock body %}

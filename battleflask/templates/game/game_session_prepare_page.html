@@ -1,0 +1,53 @@
+{% extends "base_template.html" %}
+
+{% block page_title %}
+Add your ships to the board
+{% endblock page_title %}
+
+
+{% block javascript %}
+{{ super() }}
+<body onload="refreshPageOnTime('{{ game_status_page_url }}', 5);">
+{% endblock javascript %}
+
+
+{% block body %}
+{{ super() }}
+
+<div>
+    <div>
+        <div>
+            <h1>Your Ships</h1>
+            <ul>
+                {% for ship in available_ships %}
+                <li>
+                    <button>{{ ship }}</button>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div>
+            <h2>Opponent Status</h2>
+            <p>{{opponent_status}}</p>
+        </div>
+        <table>
+            {% for row in game_field %}
+            <tr>
+                {% for col in row %}
+                <td>
+                    <button>TODO: Cell value</button>
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <br/>
+    <div>
+        <form action="{{ get_game_status_page_url }}" method="post">
+            <input type="submit" value="Ready"/>
+        </form>
+    </div>
+</div>
+
+{% endblock body %}

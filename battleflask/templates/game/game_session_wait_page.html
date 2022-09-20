@@ -1,0 +1,35 @@
+{% extends "base_template.html" %}
+
+{% block page_title %}
+Wait for other player
+{% endblock page_title %}
+
+{% block javascript %}
+{{ super() }}
+<body onload="refreshPageOnTime('{{ game_status_page_url }}');">
+{% endblock javascript %}
+
+{% block body %}
+{{ super() }}
+
+<div>
+    <div>
+        <p>
+        <h3> Share with other players Game Session ID</h3>
+        </p>
+    </div>
+    <div>
+        <h1><span>{{ session_id }}</span></h1>
+    </div>
+    <div>
+        <p>Player who created session is {{ current_player }}</p>
+    </div>
+    <br/>
+    <div>
+        <p>Opponent name {{ opponent_name }}</p>
+    </div>
+    <form action="{{ game_status_page_url }}" method="get">
+        <input type="submit" value="Update"/>
+    </form>
+</div>
+{% endblock body %}

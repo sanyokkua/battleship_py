@@ -1,0 +1,28 @@
+{% extends "base_template.html" %}
+
+{% block page_title %}
+Join to the game
+{% endblock page_title %}
+
+{% block body %}
+{{ super() }}
+
+<div>
+    <form action="{{ post_join_game_url }}" method="post">
+        <div>
+            <label for="player_name">Name:</label>
+            <div>
+                <input type="text" name="player_name" id="player_name"/>
+            </div>
+        </div>
+        <div>
+            <label for="session_id">Shared session ID:</label>
+            <div>
+                <input type="text" name="session_id" id="session_id"/>
+            </div>
+        </div>
+        <br/>
+        <input type="submit" value="Join"/>
+    </form>
+</div>
+{% endblock body %}

@@ -1,0 +1,32 @@
+<html>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Battleships</title>
+<div>
+    {% block javascript %}
+    <script type="application/javascript">
+        function refreshPageOnTime(link, time = 10) {
+            let handler_func = function () {
+                window.location = link
+            }
+            setTimeout(handler_func, 1000 * time);
+        }
+    </script>
+    {% endblock javascript %}
+    <div>
+        <nav>
+            <div>
+                <h1>
+                    {% block page_title %}
+                    {% endblock page_title %}
+                </h1>
+            </div>
+        </nav>
+    </div>
+    <br/>
+    <div>
+        {% block body %}
+        {% endblock body %}
+    </div>
+</div>
+</html>

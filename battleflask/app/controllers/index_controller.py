@@ -1,19 +1,34 @@
-from flask import Blueprint, render_template, url_for
+"""
+"""
+import logging
+
+import flask
 
 import battleflask.app.controllers.render_utils as render_utils
 from battleflask.app.controllers.constants import BLUE_PRINT_INDEX, METHOD_GET
 
-INDEX_BLUEPRINT: Blueprint = Blueprint(
+log: logging.Logger = logging.getLogger(__name__)
+
+INDEX_BLUEPRINT: flask.Blueprint = flask.Blueprint(
     BLUE_PRINT_INDEX, __name__, template_folder="templates"
 )
 
 
 @INDEX_BLUEPRINT.route("/", methods=[METHOD_GET])
 def _get_index_page() -> str:
-    url_get_new_game_view: str = url_for(f"{BLUE_PRINT_INDEX}._get_new_game_page")
-    url_get_join_game_view: str = url_for(f"{BLUE_PRINT_INDEX}._get_join_game_page")
+    """_summary_
 
-    return render_template(
+    Returns:
+        str: _description_
+    """
+    url_get_new_game_view: str = flask.url_for(f"{BLUE_PRINT_INDEX}._get_new_game_page")
+    url_get_join_game_view: str = flask.url_for(
+        f"{BLUE_PRINT_INDEX}._get_join_game_page"
+    )
+    log.debug("url_get_new_game_view: %s", url_get_new_game_view)
+    log.debug("url_get_join_game_view: %s", url_get_join_game_view)
+
+    return flask.render_template(
         "index/index_page.html",
         url_get_new_game_view=url_get_new_game_view,
         url_get_join_game_view=url_get_join_game_view,
@@ -22,9 +37,19 @@ def _get_index_page() -> str:
 
 @INDEX_BLUEPRINT.route("/new", methods=[METHOD_GET])
 def _get_new_game_page() -> str:
+    """_summary_
+
+    Returns:
+        str: _description_
+    """
     return render_utils.render_new_game_page()
 
 
 @INDEX_BLUEPRINT.route("/join", methods=[METHOD_GET])
 def _get_join_game_page() -> str:
+    """_summary_
+
+    Returns:
+        str: _description_
+    """
     return render_utils.render_join_game_page()

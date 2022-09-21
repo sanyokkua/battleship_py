@@ -1,11 +1,18 @@
+"""Configuration of the Flask application."""
 import os
 
 from flask import Flask
 
-from battleflask.app.controllers import index_controller, game_controller
+from battleflask.app.controllers import game_controller, index_controller
 
 
-def configure_flask_app(application: Flask, test_config=None):
+def configure_flask_app(application: Flask, test_config=None) -> None:
+    """Configure flask application.
+
+    Args:
+        application (Flask): application to be configured.
+        test_config (_type_, optional): test configuration. Defaults to None.
+    """
     key: str = os.environ["FLASK_APP_KEY"]
     app_key = key if key and len(key) > 0 else "development_key_tmp"
 

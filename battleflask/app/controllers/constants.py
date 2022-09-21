@@ -1,3 +1,6 @@
+"""Module provides common constant values to use them in the web controllers.
+"""
+
 BLUE_PRINT_GAME: str = "game_blueprint"
 BLUE_PRINT_INDEX: str = "index_blueprint"
 

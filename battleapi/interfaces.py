@@ -5,6 +5,7 @@ application usage.
 import abc
 
 import battleapi.dto as dto
+import battleapi.logic.models as models
 
 
 class IdGenerator(abc.ABC):
@@ -88,7 +89,7 @@ class GamePersistence(abc.ABC):
         """
 
     @abc.abstractmethod
-    def load_session(self, session_id: str) -> dto.SessionState:
+    def load_session(self, session_id: str) -> dto.SessionState | None:
         """Load game session via db_client object.
 
         Args:
@@ -109,33 +110,6 @@ class GamePersistence(abc.ABC):
             bool: result of deletion. False if error or absence of the session.
         """
 
-    @abc.abstractmethod
-    def save_player(
-        self, session_id: str, player_id: str, player: dto.PlayerInfo
-    ) -> bool:
-        """Save player to the game session.
-
-        Args:
-            session_id (str): identifier of the session to be saved. Primary Key.
-            player_id (str): identifier of the player to be saved.
-            player (dto.PlayerInfo): player information object.
-
-        Returns:
-            bool: _description_
-        """
-
-    @abc.abstractmethod
-    def load_player(self, session_id: str, player_id: str) -> dto.PlayerInfo:
-        """Load player from the game session.
-
-        Args:
-            session_id (str): identifier of the session to be saved. Primary Key.
-            player_id (str): identifier of the player to be saved.
-
-        Returns:
-            dto.PlayerInfo: player information object.
-        """
-
 
 class GameController(abc.ABC):
     """Interface for the game controller which responsible to manage all the actions
@@ -144,6 +118,7 @@ class GameController(abc.ABC):
     Args:
         abc (_type_): Inherits abstract metaclass.
     """
+
     persistence: GamePersistence
     id_generator: IdGenerator
 
@@ -177,7 +152,7 @@ class GameController(abc.ABC):
     @abc.abstractmethod
     def get_opponent_prepare_status(
         self, session_id: str, current_player_id: str
-    ) -> dto.PlayerInfo:
+    ) -> dto.PlayerInfo | None:
         """Return opponent to the passed player_id.
 
         Args:
@@ -190,7 +165,9 @@ class GameController(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get_prepare_ships_list(self, session_id: str, player_id: str) -> list:
+    def get_prepare_ships_list(
+        self, session_id: str, player_id: str
+    ) -> list[models.Ship]:
         """Get list of the available ships for the player on preparation stage.
 
         Args:
@@ -202,7 +179,9 @@ class GameController(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get_prepare_player_field(self, session_id: str, player_id: str) -> list[list]:
+    def get_prepare_player_field(
+        self, session_id: str, player_id: str
+    ) -> list[list[models.Cell]]:
         """Return field for the player on the preparation stage.
 
         Args:
@@ -214,7 +193,7 @@ class GameController(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get_opponent(self, session_id: str, player_id: str) -> dto.PlayerInfo:
+    def get_opponent(self, session_id: str, player_id: str) -> dto.PlayerInfo | None:
         """Return opponent information to the current player.
 
         Args:
@@ -226,7 +205,7 @@ class GameController(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get_active_player(self, session_id: str) -> dto.PlayerInfo:
+    def get_active_player(self, session_id: str) -> dto.PlayerInfo | None:
         """Return player information who now should have to make a move.
 
         Args:
@@ -237,7 +216,9 @@ class GameController(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get_player_by_id(self, session_id: str, player_id: str) -> dto.PlayerInfo:
+    def get_player_by_id(
+        self, session_id: str, player_id: str
+    ) -> dto.PlayerInfo | None:
         """Return player for session by its id.
 
         Args:
@@ -292,8 +273,8 @@ class GameController(abc.ABC):
         self,
         session_id: str,
         player_id: str,
-        ship_type: str,
-        coordinate: tuple[int, int],
+        ship_id: str,
+        coordinate: models.Coordinate,
         ship_direction: str,
     ) -> None:
         """Add ship to the field in preparation stage.
@@ -301,21 +282,21 @@ class GameController(abc.ABC):
         Args:
             session_id (str): current game session id.
             player_id (str): player id who adds ship.
-            ship_type (str): ship type.
-            coordinate (tuple[int, int]): coordinate of the cell.
+            ship_id (str): ship type.
+            coordinate (models.Coordinate): coordinate of the cell.
             ship_direction (str): direction of the ship.
         """
 
     @abc.abstractmethod
     def remove_ship_from_field(
-        self, session_id: str, player_id: str, coordinate: tuple[int, int]
+        self, session_id: str, player_id: str, coordinate: models.Coordinate
     ) -> None:
         """Remove ship from the field in preparation stage.
 
         Args:
             session_id (str): current game session id.
             player_id (str): player id who removes ship.
-            coordinate (tuple[int, int]): coordinate of the cell.
+            coordinate (models.Coordinate): coordinate of the cell.
         """
 
     @abc.abstractmethod
@@ -332,14 +313,14 @@ class GameController(abc.ABC):
 
     @abc.abstractmethod
     def make_shot(
-        self, session_id: str, player_id: str, coordinate: tuple[int, int]
+        self, session_id: str, player_id: str, coordinate: models.Coordinate
     ) -> dto.ShotResult:
         """Make a shot by the opponent field.
 
         Args:
             session_id (str): current game session id.
             player_id (str): player who makes a shot.
-            coordinate (tuple[int, int]): coordinate of the cell in opponent field.
+            coordinate (models.Coordinate): coordinate of the cell in opponent field.
 
         Returns:
             dto.ShotResult: Result of the made shot.

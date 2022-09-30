@@ -1,6 +1,11 @@
 """Game API Data Transfer Objects."""
 import dataclasses
 
+from logic import board as gb
+from logic import models as models
+
+import battleapi.logic.configuration.game_config as gc
+
 
 @dataclasses.dataclass
 class PlayerInfo:
@@ -20,12 +25,15 @@ class ShotResult:
 
 
 @dataclasses.dataclass
-class PlayerState:
-    """Representation of the current player state."""
+class Player:
+    """_summary_"""
 
-    has_turn: bool
-    field: list[list]
-    is_winner: bool = False
+    player_id: str
+    player_name: str
+    board: gb.GameBoard
+    ships_not_on_board: dict[models.ShipId, models.Ship]
+    all_ships: dict[models.ShipId, models.Ship]
+    is_ready: bool = False
 
 
 @dataclasses.dataclass
@@ -33,8 +41,6 @@ class SessionState:
     """Representation of the current game session."""
 
     session_id: str
-    players: dict[str, PlayerInfo]
-    states: dict[str, PlayerState]
-    active_player_id: str
-    active_player_name: str
-    is_finished_session: bool
+    game_config: gc.GameConfiguration
+    players: dict[str, Player]
+    active_player_id: str = ""

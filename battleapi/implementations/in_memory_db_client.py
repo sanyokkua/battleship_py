@@ -49,5 +49,8 @@ class InMemoryDbClient(types.DbClient):
             bool: success of the operation. True - OK, session deleted, False - Failure
                 or session was already deleted or even never exist in the DB
         """
-        del self.data_source[session_id]
+        try:
+            del self.data_source[session_id]
+        except KeyError as err:
+            return False
         return True

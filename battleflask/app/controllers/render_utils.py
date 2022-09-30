@@ -22,7 +22,7 @@ def render_new_game_page(errors: list[str] | None = None) -> str:
         str: _description_
     """
     url_post_start_game_session: str = flask.url_for(
-        f"{const.BLUE_PRINT_GAME}._post_new_game_redirect_to_wait_for_players_page"
+        f"{const.BLUE_PRINT_GAME}._post_start_redirect_to_wait_page"
     )
     log.debug("url_post_start_game_session: %s", url_post_start_game_session)
 
@@ -43,7 +43,7 @@ def render_join_game_page(errors: list[str] | None = None) -> str:
         str: _description_
     """
     url_join_game_session: str = flask.url_for(
-        f"{const.BLUE_PRINT_GAME}._post_join_game_redirect_to_game_field_page"
+        f"{const.BLUE_PRINT_GAME}._post_join_redirect_to_prepare_page"
     )
     log.debug("url_join_game_session: %s", url_join_game_session)
 

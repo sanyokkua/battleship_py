@@ -1,7 +1,10 @@
 """Implementation of the ID generator functionality."""
+import logging
 import uuid
 
 import battleapi.abstract as types
+
+log: logging.Logger = logging.getLogger(__name__)
 
 
 class Uuid4IdGenerator(types.IdGenerator):
@@ -17,4 +20,6 @@ class Uuid4IdGenerator(types.IdGenerator):
         Returns:
             str: generated id-like string.
         """
-        return str(uuid.uuid4())
+        gen_id = str(uuid.uuid4())
+        log.debug("Generated id: %s", gen_id)
+        return gen_id

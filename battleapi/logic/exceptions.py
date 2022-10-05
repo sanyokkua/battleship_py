@@ -44,7 +44,7 @@ class GameNotFinishedException(Exception):
 
 
 class PlayerDoesNotExistException(Exception):
-    """Exception is raised when game state doesn't have player with passed player_id."""
+    """Exception is raised when game state doesn't have player with passed value."""
 
     def __init__(self, message: str = "") -> None:
         Exception.__init__(self, message)

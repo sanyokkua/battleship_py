@@ -1,8 +1,11 @@
 """Definition of the abstract configuration."""
 import abc
 import enum
+import logging
 
 import battleapi.logic.models as models
+
+log: logging.Logger = logging.getLogger(__name__)
 
 Amount = int
 Size = int
@@ -62,6 +65,8 @@ class GameConfiguration(abc.ABC):
                 ship_amount=ship_amount,
             )
             list_of_ships.add(ship)
+        log.debug("amount_mapping: %s", amount_mapping)
+        log.debug("size_mapping: %s", size_mapping)
         return list_of_ships
 
 

@@ -10,9 +10,12 @@ Raises:
 Returns:
     _type_: _description_
 """
+import logging
 from typing import Union
 
 import battleapi.logic.exceptions as ex
+
+log: logging.Logger = logging.getLogger(__name__)
 
 SIZE_HORIZONTAL: int = 10
 SIZE_VERTICAL: int = 10
@@ -27,6 +30,7 @@ def validate_player_id(player_id: str) -> None:
     Raises:
         ex.IncorrectPlayerIdException: _description_
     """
+    log.debug("Player id: %s", player_id)
     if (
         player_id is None
         or not isinstance(player_id, str)
@@ -35,21 +39,18 @@ def validate_player_id(player_id: str) -> None:
         raise ex.IncorrectPlayerIdException(f"Value {player_id} is not valid!")
 
 
-def validate_not_empty_string(player_id: str) -> None:
+def validate_not_empty_string(value: str) -> None:
     """_summary_
 
     Args:
-        player_id (str): _description_
+        value (str): _description_
 
     Raises:
         ex.IncorrectStringException: _description_
     """
-    if (
-        player_id is None
-        or not isinstance(player_id, str)
-        or len(player_id.strip()) == 0
-    ):
-        raise ex.IncorrectStringException(f"Value {player_id} is not valid!")
+    log.debug("Player id: %s", value)
+    if value is None or not isinstance(value, str) or len(value.strip()) == 0:
+        raise ex.IncorrectStringException(f"Value {value} is not valid!")
 
 
 def validate_coordinate(coordinate: tuple[int, int]) -> None:
@@ -62,6 +63,7 @@ def validate_coordinate(coordinate: tuple[int, int]) -> None:
         ex.CoordinateException: _description_
         ex.CoordinateException: _description_
     """
+    log.debug("coordinate: %s", coordinate)
     row, column = coordinate
     if row < 0 or row >= SIZE_VERTICAL:
         raise ex.CoordinateException(f"Row coordinate is out of bounds: {row}")
@@ -79,6 +81,7 @@ def validate_is_not_none(obj: Union[object, None], obj_name: str = "") -> None:
     Raises:
         ex.ObjectIsNoneException: _description_
     """
+    log.debug("obj: %s", obj)
     if obj is None:
         raise ex.ObjectIsNoneException(f"Object is None. {obj_name}")
 
@@ -115,8 +118,8 @@ def get_neighbour_coordinates(
         )
         is_current_cell: bool = neighbour_row == row and neighbour_col == column
         if is_not_valid_row or is_not_valid_col or is_current_cell:
-            # log.debug('Filter coordinates that are not valid')
+            log.debug("Filter coordinates that are not valid")
             continue
         result_set.add((neighbour_row, neighbour_col))
-    # log.debug('get_neighbour_coordinates. result num: %d', len(result_set))
+    log.debug("get_neighbour_coordinates. result num: %d", len(result_set))
     return result_set

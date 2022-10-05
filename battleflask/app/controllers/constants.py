@@ -8,7 +8,7 @@ METHOD_GET: str = "GET"
 METHOD_POST: str = "POST"
 
 COOKIE_SESSION_ID: str = "session_id"
-COOKIE_PLAYER_ID: str = "player_id"
+COOKIE_PLAYER_ID: str = "value"
 
 FORM_PLAYER_NAME: str = "player_name"
 FORM_SESSION_ID: str = "session_id"

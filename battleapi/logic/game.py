@@ -1,5 +1,7 @@
 """Implementation of the game logic"""
 
+import logging
+
 import battleapi.abstract as abstract
 import battleapi.logic.board as board
 import battleapi.logic.configs as config
@@ -7,6 +9,8 @@ import battleapi.logic.exceptions as ex
 import battleapi.logic.models as models
 import battleapi.logic.player as pl
 import battleapi.logic.utils as utils
+
+log: logging.Logger = logging.getLogger(__name__)
 
 
 class Game:
@@ -28,13 +32,23 @@ class Game:
         self._game_config = game_config
         self._players = {} if players is None else players
         self._active_player_id = "" if active_player_id is None else active_player_id
+        log.debug(
+            "id_gen: %s, config: %s, players: %s, active: %s",
+            id_generator,
+            game_config,
+            self._players,
+            self._active_player_id,
+        )
 
     def add_player(self, player_id: str, player_name: str) -> None:
         utils.validate_player_id(player_id)
         utils.validate_not_empty_string(player_name)
+        log.debug("player id: %s, name: %s", player_id, player_name)
         if len(self._players) >= 2:
+            log.warning("players: %d", len(self._players))
             raise ex.ToManyPlayersException("In the session already exist 2 player")
         if player_id in self._players.keys():
+            log.warning("players ids: %s", self._players.keys())
             raise ex.PlayerExistException(f"Player {player_id} already exist")
         ships_not_on_board = {}
         all_ships = {}
@@ -46,17 +60,24 @@ class Game:
                 ship = models.Ship(ship_id, size)
                 ships_not_on_board[ship_id] = ship
                 all_ships[ship_id] = ship
+        log.debug("ships not on board: %s", ships_not_on_board)
+        log.debug("all ships: %s", all_ships)
         player = pl.Player(
             player_id, player_name, board.Board(), ships_not_on_board, all_ships
         )
+        log.debug("player: %s", player)
         self._players[player.player_id] = player
 
     def is_game_initialized(self) -> bool:
-        return len(self._players) == 2
+        is_initialized = len(self._players) == 2
+        log.debug("is initialized: %s", is_initialized)
+        return is_initialized
 
     def get_available_ships(self, player_id) -> list[models.Ship]:
         ships: dict[str, models.Ship] = self._players[player_id].ships_not_on_board
-        return [] if len(ships) == 0 else list(ships.values())
+        available = [] if len(ships) == 0 else list(ships.values())
+        log.debug("Available ships: %s", available)
+        return available
 
     def add_ship(
         self, player_id: str, coordinate: models.Coordinate, ship: models.Ship
@@ -64,6 +85,7 @@ class Game:
         utils.validate_player_id(player_id)
         utils.validate_coordinate(coordinate)
         utils.validate_is_not_none(ship)
+        log.debug("player id: %s, coord: %s, ship: %s", player_id, coordinate, ship)
         player: pl.Player = self._players[player_id]
         if ship.ship_id not in player.ships_not_on_board.keys():
             raise ex.ShipAlreadyOnTheBoardException(f"{ship.ship_id} can't be added")
@@ -77,6 +99,7 @@ class Game:
         utils.validate_coordinate(coordinate)
         player: pl.Player = self._players[player_id]
         ship_id: str | None = player.board.remove_ship(coordinate)
+        log.debug("player id: %s, coord: %s, ship: %s", player_id, coordinate, ship_id)
         if ship_id is None:
             return False
         ship: models.Ship = player.all_ships[ship_id]

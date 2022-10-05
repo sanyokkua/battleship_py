@@ -155,11 +155,11 @@ class GameController(abc.ABC):
     def get_opponent_prepare_status(
         self, session_id: str, current_player_id: str
     ) -> api_dto.PlayerDto | None:
-        """Return opponent to the passed player_id.
+        """Return opponent to the passed value.
 
         Args:
             session_id (str): session id of the existing session.
-            current_player_id (str): player_id of the player who needs to get information
+            current_player_id (str): value of the player who needs to get information
                 of the opponent
 
         Returns:

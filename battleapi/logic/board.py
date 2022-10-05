@@ -6,11 +6,14 @@ Raises:
 Returns:
     _type_: _description_
 """
+import logging
 from typing import Callable
 
 import battleapi.logic.exceptions as ex
 import battleapi.logic.models as models
 import battleapi.logic.utils as utils
+
+log: logging.Logger = logging.getLogger(__name__)
 
 CoordinateSet = set[tuple[int, int]]
 CoordinateList = list[tuple[int, int]]
@@ -47,6 +50,9 @@ class Board:
             ]
         else:
             self._board = board
+        log.debug(
+            "Inited. board: %s, ships_on_board: %s", self._board, self._ships_on_board
+        )
 
     @staticmethod
     def _create_ship_coordinates(
@@ -68,6 +74,9 @@ class Board:
                 coordinates.add((row, col + diff))
             else:
                 coordinates.add((row + diff, col))
+        log.debug(
+            "Ship: %s, Orig coord: %s, created: %s", ship, coordinate, coordinates
+        )
         return coordinates
 
     @staticmethod
@@ -87,6 +96,7 @@ class Board:
             neighbours = utils.get_neighbour_coordinates(coordinate)
             for neighbour in neighbours:
                 coordinates.add(neighbour)
+        log.debug("orig: %s, neighbours: %s", ship_coordinates, coordinates)
         return coordinates
 
     def _validate_coordinates(self, coordinates: CoordinateCollection) -> None:
@@ -105,6 +115,7 @@ class Board:
                 raise ex.CellIsNotEmptyException(
                     f"Coordinate isn't correct {coordinate}"
                 )
+        log.debug("origin: %s", coordinates)
 
     def add_ship(self, coordinate: models.Coordinate, ship: models.Ship) -> None:
         """_summary_
@@ -123,6 +134,13 @@ class Board:
         )
         self._validate_coordinates(neighbour_coordinates)
 
+        log.debug(
+            "ship: %s, coord: %s, coordinates: %s, neighbours: %s",
+            ship,
+            coordinate,
+            ship_coordinates,
+            neighbour_coordinates,
+        )
         for ship_coordinate in ship_coordinates:
             row, col = ship_coordinate
             cell: models.Cell = self._board[row][col]
@@ -142,16 +160,19 @@ class Board:
         utils.validate_coordinate(coordinate)
         row, col = coordinate
         cell: models.Cell = self._board[row][col]
+        log.debug("coord: %s, cell: %s", coordinate, cell)
         if cell.has_ship:
             ship_id: ShipId | None = cell.ship_id
             if ship_id is None:
                 raise ex.ShipWithoutIdException("Ship doesn't have id")
+            log.debug("ship id: %s", ship_id)
             coordinates: CoordinateSet = self._ships_on_board[ship_id]
             for current_coordinate in coordinates:
                 row, col = current_coordinate
                 self._board[row][col].has_ship = False
                 self._board[row][col].ship_id = None
             del self._ships_on_board[ship_id]
+            log.debug("removed coordinates: %s", coordinates)
             return ship_id
         return None
 
@@ -167,6 +188,7 @@ class Board:
         utils.validate_coordinate(coordinate)
         row, col = coordinate
         cell: models.Cell = self._board[row][col]
+        log.debug("coord: %s, cell: %s", coordinate, cell)
         cell.has_shot = True
         if cell.has_ship:
             self._process_cells_after_shot(coordinate)
@@ -181,6 +203,7 @@ class Board:
         Returns:
             models.Board: _description_
         """
+        log.debug("is_hidden: %s", is_hidden)
         field_to_return: models.Board = []
         for row in self._board:
             new_row: list[models.Cell] = []
@@ -190,12 +213,14 @@ class Board:
                 show_ship: bool = (not is_hidden and has_ship) or (
                     is_hidden and has_ship and has_shot
                 )
+                log.debug("show_ship: %s", show_ship)
                 ship_id = None if is_hidden else cell.ship_id
                 new_cell = models.Cell(
                     ship_id=ship_id, has_ship=show_ship, has_shot=has_shot
                 )
                 new_row.append(new_cell)
             field_to_return.append(new_row)
+        log.debug("field_to_return: %s", field_to_return)
         return field_to_return
 
     def get_amount_of_not_shot_cells(self) -> int:
@@ -228,6 +253,7 @@ class Board:
             for cell in row:
                 if cell_filter(cell):
                     count += 1
+        log.debug("count_amount: %d", count)
         return count
 
     # noinspection Assert

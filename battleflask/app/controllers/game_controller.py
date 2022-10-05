@@ -148,7 +148,7 @@ def _get_session_gameplay_page(session_id: str) -> str:
         str: _description_
     """
     current_player_id: str = request_utils.get_cookies_string(const.COOKIE_PLAYER_ID)
-    log.debug("player_id: %s", current_player_id)
+    log.debug("value: %s", current_player_id)
 
     validation.validate_is_not_empty_string(current_player_id)
 
@@ -198,7 +198,7 @@ def _get_session_prepare_opponent(session_id: str) -> str:
         str: _description_
     """
     current_player_id: str = request_utils.get_cookies_string(const.COOKIE_PLAYER_ID)
-    log.debug("player_id: %s", current_player_id)
+    log.debug("value: %s", current_player_id)
 
     validation.validate_is_not_empty_string(current_player_id)
 

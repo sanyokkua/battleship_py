@@ -18,7 +18,7 @@ def create_cells(has_ship=True, has_shot=False):
 
 class TestGameBoard:
     def test_game_board_creation_without_params(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
 
         assert board._board is not None
         assert len(board._board) == 10
@@ -34,7 +34,7 @@ class TestGameBoard:
 
     def test_game_board_creation_with_params(self) -> None:
         cells = create_cells()
-        board = b.GameBoard(cells)
+        board = b.Board(cells)
 
         assert board._board is not None
         assert len(board._board) == 10
@@ -51,7 +51,7 @@ class TestGameBoard:
 
     def test_static__create_ship_coordinates_size_2_horizontal(self) -> None:
         ship = m.Ship("id", 2, m.Direction.HORIZONTAL)
-        coordinates = list(b.GameBoard._create_ship_coordinates((2, 3), ship))
+        coordinates = list(b.Board._create_ship_coordinates((2, 3), ship))
         coordinates.sort()
         assert len(coordinates) == 2
         assert coordinates[0] == (2, 3)
@@ -59,21 +59,21 @@ class TestGameBoard:
 
     def test_static__create_ship_coordinates_size_1_horizontal(self) -> None:
         ship = m.Ship("id", 1, m.Direction.HORIZONTAL)
-        coordinates = list(b.GameBoard._create_ship_coordinates((2, 3), ship))
+        coordinates = list(b.Board._create_ship_coordinates((2, 3), ship))
         coordinates.sort()
         assert len(coordinates) == 1
         assert coordinates[0] == (2, 3)
 
     def test_static__create_ship_coordinates_size_1_vertical(self) -> None:
         ship = m.Ship("id", 1, m.Direction.VERTICAL)
-        coordinates = list(b.GameBoard._create_ship_coordinates((2, 3), ship))
+        coordinates = list(b.Board._create_ship_coordinates((2, 3), ship))
         coordinates.sort()
         assert len(coordinates) == 1
         assert coordinates[0] == (2, 3)
 
     def test_static__create_ship_coordinates_size_2_vertical(self) -> None:
         ship = m.Ship("id", 2, m.Direction.VERTICAL)
-        coordinates = list(b.GameBoard._create_ship_coordinates((2, 3), ship))
+        coordinates = list(b.Board._create_ship_coordinates((2, 3), ship))
         coordinates.sort()
         assert len(coordinates) == 2
         assert coordinates[0] == (2, 3)
@@ -81,7 +81,7 @@ class TestGameBoard:
 
     def test_static__create_ship_coordinates_size_5_horizontal(self) -> None:
         ship = m.Ship("id", 5, m.Direction.HORIZONTAL)
-        coordinates = list(b.GameBoard._create_ship_coordinates((4, 0), ship))
+        coordinates = list(b.Board._create_ship_coordinates((4, 0), ship))
         coordinates.sort()
         assert len(coordinates) == 5
         assert coordinates[0] == (4, 0)
@@ -92,7 +92,7 @@ class TestGameBoard:
 
     def test_static__create_ship_coordinates_size_5_vertical(self) -> None:
         ship = m.Ship("id", 5, m.Direction.VERTICAL)
-        coordinates = list(b.GameBoard._create_ship_coordinates((3, 7), ship))
+        coordinates = list(b.Board._create_ship_coordinates((3, 7), ship))
         coordinates.sort()
         assert len(coordinates) == 5
         assert coordinates[0] == (3, 7)
@@ -103,12 +103,12 @@ class TestGameBoard:
 
     def test_static__create_neighbour_coordinates_size_3_vertical(self) -> None:
         ship = m.Ship("id", 3, m.Direction.VERTICAL)
-        coordinates = list(b.GameBoard._create_ship_coordinates((6, 6), ship))
+        coordinates = list(b.Board._create_ship_coordinates((6, 6), ship))
         coordinates.sort()
         assert coordinates[0] == (6, 6)
         assert coordinates[1] == (7, 6)
         assert coordinates[2] == (8, 6)
-        neighbours = list(b.GameBoard._create_neighbour_coordinates(coordinates))
+        neighbours = list(b.Board._create_neighbour_coordinates(coordinates))
         neighbours.sort()
         for coordinate in coordinates:
             row, col = coordinate
@@ -130,54 +130,54 @@ class TestGameBoard:
             assert neighbour_8 in neighbours
 
     def test__validate_coordinates_out_of_bounds_1(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         ship = m.Ship("id", 3, m.Direction.VERTICAL)
-        coordinates = b.GameBoard._create_ship_coordinates((8, 6), ship)
+        coordinates = b.Board._create_ship_coordinates((8, 6), ship)
         with pytest.raises(ex.CoordinateException):
             board._validate_coordinates(coordinates)
 
     def test__validate_coordinates_out_of_bounds_2(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         ship = m.Ship("id", 3, m.Direction.HORIZONTAL)
-        coordinates = b.GameBoard._create_ship_coordinates((9, 9), ship)
+        coordinates = b.Board._create_ship_coordinates((9, 9), ship)
         with pytest.raises(ex.CoordinateException):
             board._validate_coordinates(coordinates)
 
     def test__validate_coordinates_out_of_bounds_not_raised_for_neighbours(
-            self,
+        self,
     ) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         ship = m.Ship("id", 3, m.Direction.HORIZONTAL)
-        coordinates = b.GameBoard._create_ship_coordinates((0, 1), ship)
-        neighbours = b.GameBoard._create_neighbour_coordinates(coordinates)
+        coordinates = b.Board._create_ship_coordinates((0, 1), ship)
+        neighbours = b.Board._create_neighbour_coordinates(coordinates)
         board._validate_coordinates(neighbours)
 
     def test__validate_coordinates_cell_has_ship_1(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         ship = m.Ship("id", 3, m.Direction.HORIZONTAL)
-        coordinates = b.GameBoard._create_ship_coordinates((5, 5), ship)
+        coordinates = b.Board._create_ship_coordinates((5, 5), ship)
         board._board[5][5].has_ship = True
         with pytest.raises(ex.CellIsNotEmptyException):
             board._validate_coordinates(coordinates)
 
     def test__validate_coordinates_cell_has_ship_2(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         ship = m.Ship("id", 3, m.Direction.HORIZONTAL)
-        coordinates = b.GameBoard._create_ship_coordinates((5, 5), ship)
+        coordinates = b.Board._create_ship_coordinates((5, 5), ship)
         board._board[5][6].has_ship = True
         with pytest.raises(ex.CellIsNotEmptyException):
             board._validate_coordinates(coordinates)
 
     def test__validate_coordinates_cell_has_ship_3(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         ship = m.Ship("id", 3, m.Direction.HORIZONTAL)
-        coordinates = b.GameBoard._create_ship_coordinates((5, 5), ship)
+        coordinates = b.Board._create_ship_coordinates((5, 5), ship)
         board._board[5][7].has_ship = True
         with pytest.raises(ex.CellIsNotEmptyException):
             board._validate_coordinates(coordinates)
 
     def test_add_ship_size_3_coordinate_0_0_horizontal(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         ship = m.Ship("ship_main_coordinate_0_0", 3, m.Direction.HORIZONTAL)
         board.add_ship((0, 0), ship)
         expected_ship_coordinates = [
@@ -192,7 +192,7 @@ class TestGameBoard:
             assert not board._board[row][col].has_shot
 
     def test_add_ship_size_5_coordinate_5_5_vertical(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         ship = m.Ship("ship_main_coordinate_5_5", 5, m.Direction.VERTICAL)
         board.add_ship((5, 5), ship)
 
@@ -210,7 +210,7 @@ class TestGameBoard:
             assert not board._board[row][col].has_shot
 
     def test_add_ship_size_1_coordinate_9_9_vertical(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         ship = m.Ship("ship_main_coordinate_9_9", 1, m.Direction.VERTICAL)
         board.add_ship((9, 9), ship)
 
@@ -222,21 +222,21 @@ class TestGameBoard:
             assert not board._board[row][col].has_shot
 
     def test_add_ship_size_3_coordinate_0_9_horizontal_out_of_bounds(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         ship = m.Ship("ship_main_coordinate_0_9", 3, m.Direction.HORIZONTAL)
 
         with pytest.raises(ex.CoordinateException):
             board.add_ship((0, 9), ship)
 
     def test_add_ship_size_3_coordinate_9_0_vertical_out_of_bounds(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         ship = m.Ship("ship_main_coordinate_9_0", 3, m.Direction.VERTICAL)
 
         with pytest.raises(ex.CoordinateException):
             board.add_ship((8, 0), ship)
 
     def test_add_ship_size_3_coordinate_0_0_horizontal_neighbour_vertical(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         neighbour_ship = m.Ship("ship_main_coordinate_1_0", 3, m.Direction.VERTICAL)
         board.add_ship((1, 0), neighbour_ship)
 
@@ -245,9 +245,9 @@ class TestGameBoard:
             board.add_ship((0, 0), ship)
 
     def test_add_ship_size_3_coordinate_0_0_horizontal_neighbour_horizontal(
-            self,
+        self,
     ) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         neighbour_ship = m.Ship("ship_main_coordinate_0_3", 3, m.Direction.HORIZONTAL)
         board.add_ship((0, 3), neighbour_ship)
 
@@ -256,7 +256,7 @@ class TestGameBoard:
             board.add_ship((0, 0), ship)
 
     def test_add_ship_size_4_coordinate_5_5_vertical_neighbour_horizontal(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         neighbour_ship_1 = m.Ship("ship_main_coordinate_3_3", 4, m.Direction.VERTICAL)
         neighbour_ship_2 = m.Ship("ship_main_coordinate_5_6", 4, m.Direction.HORIZONTAL)
         board.add_ship((3, 3), neighbour_ship_1)  # 3-3 4-3 5-3 6-3
@@ -267,7 +267,7 @@ class TestGameBoard:
             board.add_ship((5, 5), ship)
 
     def test_remove_ship(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         neighbour_ship_1 = m.Ship("ship_main_coordinate_4_3", 4, m.Direction.VERTICAL)
         board.add_ship((4, 3), neighbour_ship_1)
         neighbour_ship_2 = m.Ship("ship_main_coordinate_5_6", 2, m.Direction.HORIZONTAL)
@@ -292,7 +292,7 @@ class TestGameBoard:
             assert board._board[row][col].has_ship
 
     def test_remove_ship_when_coordinate_does_not_have_ship(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         neighbour_ship_1 = m.Ship("ship_main_coordinate_4_3", 4, m.Direction.VERTICAL)
         board.add_ship((4, 3), neighbour_ship_1)
         neighbour_ship_2 = m.Ship("ship_main_coordinate_5_6", 2, m.Direction.HORIZONTAL)
@@ -313,7 +313,7 @@ class TestGameBoard:
             assert board._board[row][col].has_ship
 
     def test_make_shot(self) -> None:
-        board = b.GameBoard()
+        board = b.Board()
         neighbour_ship_1 = m.Ship("ship_main_coordinate_0_0", 5, m.Direction.VERTICAL)
         board.add_ship((0, 0), neighbour_ship_1)
         neighbour_ship_2 = m.Ship("ship_main_coordinate_5_5", 3, m.Direction.HORIZONTAL)
@@ -353,13 +353,13 @@ class TestGameBoard:
         final_amount_of_alive_ships = board.get_amount_of_alive_ships()
 
         assert (
-                initial_amount_of_cells_without_shot != final_amount_of_cells_without_shot
+            initial_amount_of_cells_without_shot != final_amount_of_cells_without_shot
         )
         assert initial_amount_of_alive_ships != final_amount_of_alive_ships
         assert final_amount_of_alive_ships == 0
 
     def test_get_board_should_not_change_board_values(self):
-        board = b.GameBoard()
+        board = b.Board()
         ship = m.Ship("ship_main_coordinate_0_0", 5, m.Direction.VERTICAL)
         board.add_ship((0, 0), ship)
 
@@ -377,7 +377,7 @@ class TestGameBoard:
         assert not board._board[0][0].has_shot
 
     def test_get_board_should_not_sho_ship_without_shot(self):
-        board = b.GameBoard()
+        board = b.Board()
         ship = m.Ship("ship_main_coordinate_0_0", 5, m.Direction.VERTICAL)
         board.add_ship((0, 0), ship)
         board.make_shot((1, 0))

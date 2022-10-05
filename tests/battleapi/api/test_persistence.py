@@ -1,9 +1,10 @@
 from unittest.mock import MagicMock
 
-import battleapi.api.persistance_api as papi
-import battleapi.dto as dto
-import battleapi.implementations.in_memory_db_client as memory
-import battleapi.logic.configuration.custom_config as cfg
+import db.in_memory_db_client as memory
+
+import battleapi.api.dto as dto
+import battleapi.api.persistence as papi
+import battleapi.logic.configs as cfg
 
 
 class TestPersistenceApi:
@@ -11,12 +12,12 @@ class TestPersistenceApi:
         db_client_with_mocks = memory.InMemoryDbClient()
         db_client_with_mocks.save = MagicMock(return_value=True)
 
-        persistence = papi.PersistenceApi(db_client=db_client_with_mocks)
+        persistence = papi.GamePersistenceApi(db_client=db_client_with_mocks)
 
         session_id = "id_to_check"
         config = cfg.CustomGameConfiguration()
         active_player = "active_player_id"
-        session = dto.SessionState(
+        session = dto.SessionStateDto(
             session_id=session_id,
             game_config=config,
             players={},
@@ -31,11 +32,11 @@ class TestPersistenceApi:
         db_client_with_mocks = memory.InMemoryDbClient()
         db_client_with_mocks.save = MagicMock(side_effect=AttributeError())
 
-        persistence = papi.PersistenceApi(db_client=db_client_with_mocks)
+        persistence = papi.GamePersistenceApi(db_client=db_client_with_mocks)
         session_id = "id_to_check"
         config = cfg.CustomGameConfiguration()
         active_player = "active_player_id"
-        session = dto.SessionState(
+        session = dto.SessionStateDto(
             session_id=session_id,
             game_config=config,
             players={},
@@ -47,12 +48,12 @@ class TestPersistenceApi:
 
     def test_load_functionality_success(self):
         db_client_with_mocks = memory.InMemoryDbClient()
-        persistence = papi.PersistenceApi(db_client=db_client_with_mocks)
+        persistence = papi.GamePersistenceApi(db_client=db_client_with_mocks)
 
         session_id = "id_to_check"
         config = cfg.CustomGameConfiguration()
         active_player = "active_player_id"
-        session = dto.SessionState(
+        session = dto.SessionStateDto(
             session_id=session_id,
             game_config=config,
             players={},
@@ -67,7 +68,7 @@ class TestPersistenceApi:
     def test_load_functionality_fail(self):
         db_client_with_mocks = memory.InMemoryDbClient()
         db_client_with_mocks.load = MagicMock(side_effect=AttributeError())
-        persistence = papi.PersistenceApi(db_client=db_client_with_mocks)
+        persistence = papi.GamePersistenceApi(db_client=db_client_with_mocks)
 
         session_id = "error_session_id"
         res = persistence.load_session(session_id)
@@ -79,7 +80,7 @@ class TestPersistenceApi:
         db_client_with_mocks = memory.InMemoryDbClient()
         db_client_with_mocks.remove = MagicMock(return_value=True)
 
-        persistence = papi.PersistenceApi(db_client=db_client_with_mocks)
+        persistence = papi.GamePersistenceApi(db_client=db_client_with_mocks)
         session_id = "session_to_delete"
 
         assert persistence.remove_session(session_id)
@@ -89,7 +90,7 @@ class TestPersistenceApi:
         db_client_with_mocks = memory.InMemoryDbClient()
         db_client_with_mocks.remove = MagicMock(side_effect=AttributeError())
 
-        persistence = papi.PersistenceApi(db_client=db_client_with_mocks)
+        persistence = papi.GamePersistenceApi(db_client=db_client_with_mocks)
         session_id = "session_to_delete"
 
         assert not persistence.remove_session(session_id)

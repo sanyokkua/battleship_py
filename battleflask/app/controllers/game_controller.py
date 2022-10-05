@@ -8,7 +8,7 @@ import logging
 import flask
 import werkzeug
 
-import battleapi.dto as dto
+import battleapi.api.dto as dto
 import battleflask.app.controllers.constants as const
 import battleflask.app.controllers.render_utils as render_utils
 import battleflask.app.controllers.request_utils as request_utils
@@ -34,7 +34,7 @@ def _post_start_redirect_to_wait_page() -> werkzeug.Response:
     validation.validate_is_not_empty_string(player_name)
 
     session_id: str = game.init_game_session()
-    player: dto.PlayerInfo = game.create_player_in_session(session_id, player_name)
+    player: dto.PlayerDto = game.create_player_in_session(session_id, player_name)
     player_id: str = player.player_id
     log.debug("Created session: %s, player: %s", session_id, player)
 
@@ -62,7 +62,7 @@ def _post_join_redirect_to_prepare_page() -> werkzeug.Response:
     validation.validate_is_not_empty_string(player_name)
     validation.validate_is_not_empty_string(session_id)
 
-    player: dto.PlayerInfo = game.create_player_in_session(session_id, player_name)
+    player: dto.PlayerDto = game.create_player_in_session(session_id, player_name)
     player_id: str = player.player_id
     log.debug("Created session: %s, player: %s", session_id, player)
 
@@ -92,8 +92,8 @@ def _get_session_wait_page(session_id: str) -> str:
     log.debug("current_player_id: %s", current_player_id)
     validation.validate_is_not_empty_string(current_player_id)
 
-    player: dto.PlayerInfo = game.get_player_by_id(session_id, current_player_id)
-    opponent: dto.PlayerInfo = game.get_opponent(session_id, player.player_id)
+    player: dto.PlayerDto = game.get_player_by_id(session_id, current_player_id)
+    opponent: dto.PlayerDto = game.get_opponent(session_id, player.player_id)
     log.debug("Player: %s, opponent: %s", player, opponent)
 
     return render_utils.render_wait_page(
@@ -118,8 +118,8 @@ def _get_session_prepare_page(session_id: str) -> str:
 
     validation.validate_is_not_empty_string(current_player_id)
 
-    player: dto.PlayerInfo = game.get_player_by_id(session_id, current_player_id)
-    opponent: dto.PlayerInfo = game.get_opponent_prepare_status(
+    player: dto.PlayerDto = game.get_player_by_id(session_id, current_player_id)
+    opponent: dto.PlayerDto = game.get_opponent_prepare_status(
         session_id, current_player_id
     )
     log.debug("Player: %s, opponent: %s", player, opponent)
@@ -152,8 +152,8 @@ def _get_session_gameplay_page(session_id: str) -> str:
 
     validation.validate_is_not_empty_string(current_player_id)
 
-    player: dto.PlayerInfo = game.get_player_by_id(session_id, current_player_id)
-    opponent: dto.PlayerInfo = game.get_opponent(session_id, current_player_id)
+    player: dto.PlayerDto = game.get_player_by_id(session_id, current_player_id)
+    opponent: dto.PlayerDto = game.get_opponent(session_id, current_player_id)
     log.debug("Player: %s, opponent: %s", player, opponent)
     active_player_name: str = game.get_active_player(session_id).player_name
     log.debug("active_player_name: %s", active_player_name)
@@ -202,7 +202,7 @@ def _get_session_prepare_opponent(session_id: str) -> str:
 
     validation.validate_is_not_empty_string(current_player_id)
 
-    opponent: dto.PlayerInfo = game.get_opponent(session_id, current_player_id)
+    opponent: dto.PlayerDto = game.get_opponent(session_id, current_player_id)
     log.debug("Opponent: %s", opponent)
     return opponent.player_name
 
@@ -217,7 +217,7 @@ def _get_session_finish_page(session_id: str) -> str:
     Returns:
         str: _description_
     """
-    winner_player: dto.PlayerInfo = game.get_winner(session_id)
+    winner_player: dto.PlayerDto = game.get_winner(session_id)
     log.debug("winner: %s", winner_player)
     return render_utils.render_finish_page(session_id, winner_player.player_name)
 
@@ -379,7 +379,7 @@ def _post_session_gameplay_shot_redirect_to_gameplay_page(
     )
     log.debug("Ship Coordinate (%d, %d)", ship_coordinate_row, ship_coordinate_column)
 
-    result: dto.ShotResult = game.make_shot(
+    result: dto.ShotResultDto = game.make_shot(
         session_id, cookies_player_id, (ship_coordinate_row, ship_coordinate_column)
     )
     response: werkzeug.Response

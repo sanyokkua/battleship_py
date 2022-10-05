@@ -1,19 +1,20 @@
-import battleapi.implementations.in_memory_db_client as client
-import battleapi.logic.configuration.classic_config as cc
-from battleapi.dto import SessionState
+import db.in_memory_db_client as client
+
+import battleapi.logic.configs as cc
+from battleapi.api.dto import SessionStateDto
 
 
 def prepare_session(session_id_1, session_id_2):
     game_config = cc.ClassicGameConfiguration()
     active_player_id = "player_1"
     active_player_id_2 = "player_2"
-    session = SessionState(
+    session = SessionStateDto(
         session_id=session_id_1,
         game_config=game_config,
         players={},
         active_player_id=active_player_id,
     )
-    session2 = SessionState(
+    session2 = SessionStateDto(
         session_id=session_id_2,
         game_config=game_config,
         players={},
@@ -39,13 +40,13 @@ class TestUuid4IdGenerator:
         players = {}
         active_player_id = ""
         active_player_id_2 = "player_2"
-        session = SessionState(
+        session = SessionStateDto(
             session_id=session_id,
             game_config=game_config,
             players=players,
             active_player_id=active_player_id,
         )
-        session2 = SessionState(
+        session2 = SessionStateDto(
             session_id=session_id_2,
             game_config=game_config,
             players=players,
@@ -67,8 +68,7 @@ class TestUuid4IdGenerator:
         assert in_memory_client.data_source["session_id_2"].session_id == "session_id_2"
         assert in_memory_client.data_source["session_id_2"].players == {}
         assert (
-                in_memory_client.data_source[
-                    "session_id_2"].active_player_id == "player_2"
+            in_memory_client.data_source["session_id_2"].active_player_id == "player_2"
         )
 
     def test_client_load(self) -> None:

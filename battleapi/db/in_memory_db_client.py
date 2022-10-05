@@ -1,22 +1,22 @@
 """Implementation of DB client for in memory keeping Game Session Data."""
-import battleapi.dto as dto
-import battleapi.interfaces as types
+import battleapi.abstract as types
+import battleapi.api.dto as dto
 
 
 class InMemoryDbClient(types.DbClient):
     """Implementation for the DB client required for the game.
 
     Args:
-        types.DbClient (_type_): Inherited interface.
+        abstract.DbClient (_type_): Inherited interface.
     """
 
-    data_source: dict[str, dto.SessionState]
+    data_source: dict[str, dto.SessionStateDto]
 
     def __init__(self) -> None:
         self.data_source = {}
 
-    def save(self, session_id: str, session: dto.SessionState) -> bool:
-        """Save SessionState object to the DB with passed session_id.
+    def save(self, session_id: str, session: dto.SessionStateDto) -> bool:
+        """Save SessionStateDto object to the DB with passed session_id.
 
         Args:
             session_id (str): unique identifier of the session. Primary Key.
@@ -28,8 +28,8 @@ class InMemoryDbClient(types.DbClient):
         self.data_source[session_id] = session
         return True
 
-    def load(self, session_id: str) -> dto.SessionState:
-        """Load SessionState object from the DB with passed session_id.
+    def load(self, session_id: str) -> dto.SessionStateDto:
+        """Load SessionStateDto object from the DB with passed session_id.
 
         Args:
             session_id (str): unique identifier of the session. Primary Key.
@@ -40,7 +40,7 @@ class InMemoryDbClient(types.DbClient):
         return self.data_source[session_id]
 
     def remove(self, session_id: str) -> bool:
-        """Remove SessionState object from the DB with passed session_id.
+        """Remove SessionStateDto object from the DB with passed session_id.
 
         Args:
             session_id (str): unique identifier of the session. Primary Key.

@@ -6,7 +6,7 @@ Raises:
 Returns:
     _type_: _description_
 """
-from typing import Callable, Union
+from typing import Callable
 
 import battleapi.logic.exceptions as ex
 import battleapi.logic.models as models
@@ -14,12 +14,13 @@ import battleapi.logic.utils as utils
 
 CoordinateSet = set[tuple[int, int]]
 CoordinateList = list[tuple[int, int]]
-CoordinateCollection = Union[CoordinateList, CoordinateSet]
-BoardOrNone = Union[models.Board, None]
+CoordinateCollection = CoordinateList | CoordinateSet
+BoardOrNone = models.Board | None
 ShipId = str
+Filter = Callable[[models.Cell], bool]
 
 
-class GameBoard:
+class Board:
     """_summary_
 
     Raises:
@@ -30,7 +31,7 @@ class GameBoard:
     """
 
     _board: models.Board
-    _ships_on_board: dict[ShipId, set[models.Coordinate]]
+    _ships_on_board: dict[ShipId, CoordinateSet]
 
     def __init__(self, board: BoardOrNone = None) -> None:
         """_summary_
@@ -129,7 +130,7 @@ class GameBoard:
             cell.ship_id = ship.ship_id
         self._ships_on_board[ship.ship_id] = ship_coordinates
 
-    def remove_ship(self, coordinate: models.Coordinate) -> Union[ShipId, None]:
+    def remove_ship(self, coordinate: models.Coordinate) -> ShipId | None:
         """_summary_
 
         Args:
@@ -142,7 +143,7 @@ class GameBoard:
         row, col = coordinate
         cell: models.Cell = self._board[row][col]
         if cell.has_ship:
-            ship_id: Union[str, None] = cell.ship_id
+            ship_id: ShipId | None = cell.ship_id
             if ship_id is None:
                 raise ex.ShipWithoutIdException("Ship doesn't have id")
             coordinates: CoordinateSet = self._ships_on_board[ship_id]
@@ -213,7 +214,7 @@ class GameBoard:
         """
         return self._count_amount(lambda cell: not cell.has_shot and cell.has_ship)
 
-    def _count_amount(self, cell_filter: Callable[[models.Cell], bool]) -> int:
+    def _count_amount(self, cell_filter: Filter) -> int:
         """_summary_
 
         Args:

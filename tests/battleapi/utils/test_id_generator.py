@@ -1,4 +1,4 @@
-import battleapi.implementations.id_generator as id_gen
+import battleapi.utils.id_generator as id_gen
 
 
 class TestUuid4IdGenerator:

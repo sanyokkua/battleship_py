@@ -1,22 +1,22 @@
 from unittest.mock import MagicMock
 
+import db.in_memory_db_client as memory
 import pytest
 
-import battleapi.api.controller_api as c
-import battleapi.api.persistance_api as p
-import battleapi.dto as dto
-import battleapi.exceptions as ex
-import battleapi.implementations.id_generator as gen
-import battleapi.implementations.in_memory_db_client as memory
-import battleapi.logic.configuration.custom_config as cfg
+import battleapi.api.controller as c
+import battleapi.api.dto as dto
+import battleapi.api.persistence as p
+import battleapi.logic.configs as cfg
+import battleapi.logic.exceptions as ex
 import battleapi.logic.models as models
+import battleapi.utils.id_generator as gen
 
 
 def create_real_controller():
     generator = gen.Uuid4IdGenerator()
     db_client = memory.InMemoryDbClient()
-    persistence = p.PersistenceApi(db_client)
-    cotroller = c.ControllerApi(persistence=persistence, id_generator=generator)
+    persistence = p.GamePersistenceApi(db_client)
+    cotroller = c.GameControllerApi(persistence=persistence, id_generator=generator)
     return cotroller
 
 
@@ -24,9 +24,11 @@ class TestControllerApi:
     def test_init_game_session_success(self) -> None:
         generated_id = "generated_id"
         db_client = memory.InMemoryDbClient()
-        persistence = p.PersistenceApi(db_client)
+        persistence = p.GamePersistenceApi(db_client)
         id_generator = gen.Uuid4IdGenerator()
-        controller = c.ControllerApi(id_generator=id_generator, persistence=persistence)
+        controller = c.GameControllerApi(
+            id_generator=id_generator, persistence=persistence
+        )
 
         persistence.save_session = MagicMock(return_value=True)
         id_generator.generate_id = MagicMock(return_value=generated_id)
@@ -38,9 +40,11 @@ class TestControllerApi:
     def test_init_game_session_fail(self) -> None:
         generated_id = "generated_id"
         db_client = memory.InMemoryDbClient()
-        persistence = p.PersistenceApi(db_client)
+        persistence = p.GamePersistenceApi(db_client)
         id_generator = gen.Uuid4IdGenerator()
-        controller = c.ControllerApi(id_generator=id_generator, persistence=persistence)
+        controller = c.GameControllerApi(
+            id_generator=id_generator, persistence=persistence
+        )
 
         persistence.save_session = MagicMock(return_value=False)
         id_generator.generate_id = MagicMock(return_value=generated_id)
@@ -54,12 +58,14 @@ class TestControllerApi:
         player_id = "test_player_id"
         player_name = "test_player"
         db_client = memory.InMemoryDbClient()
-        persistence = p.PersistenceApi(db_client)
+        persistence = p.GamePersistenceApi(db_client)
         id_generator = gen.Uuid4IdGenerator()
-        controller = c.ControllerApi(id_generator=id_generator, persistence=persistence)
+        controller = c.GameControllerApi(
+            id_generator=id_generator, persistence=persistence
+        )
         config = cfg.CustomGameConfiguration()
         active_player = "active_player_id"
-        session = dto.SessionState(
+        session = dto.SessionStateDto(
             session_id=session_id,
             game_config=config,
             players={},
@@ -193,7 +199,7 @@ class TestControllerApi:
             created_player_2.player_id
         ]
         controller.persistence.load_session = MagicMock(
-            return_value=dto.SessionState(
+            return_value=dto.SessionStateDto(
                 session_id=session_id,
                 game_config=cfg.CustomGameConfiguration(),
                 players={
@@ -412,7 +418,7 @@ class TestControllerApi:
         ]
 
         controller.persistence.load_session = MagicMock(
-            return_value=dto.SessionState(
+            return_value=dto.SessionStateDto(
                 session_id=session_id,
                 game_config=cfg.CustomGameConfiguration(),
                 players={

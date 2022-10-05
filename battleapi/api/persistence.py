@@ -1,20 +1,20 @@
 """Implementation of the Game Persistence functionality."""
-import battleapi.dto as dto
-import battleapi.interfaces as types
+import battleapi.abstract as abstract
+import battleapi.api.dto as dto
 
 
-class PersistenceApi(types.GamePersistence):
+class GamePersistenceApi(abstract.GamePersistence):
     """Implementation for the Persistence API required for game controller.
 
     Args:
-        types.GamePersistence (_type_): Inherits interface.
+        abstract.GamePersistence (_type_): Inherits interface.
     """
 
-    def __init__(self, db_client: types.DbClient) -> None:
+    def __init__(self, db_client: abstract.DbClient) -> None:
         """Initialize Persistence."""
         self.db_client = db_client
 
-    def save_session(self, session_id: str, session_state: dto.SessionState) -> bool:
+    def save_session(self, session_id: str, session_state: dto.SessionStateDto) -> bool:
         """Save game session via db_client object.
 
         Args:
@@ -29,7 +29,7 @@ class PersistenceApi(types.GamePersistence):
         except Exception:
             return False
 
-    def load_session(self, session_id: str) -> dto.SessionState | None:
+    def load_session(self, session_id: str) -> dto.SessionStateDto | None:
         """Load game session via db_client object.
 
         Args:

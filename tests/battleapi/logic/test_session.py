@@ -1,17 +1,17 @@
 import pytest
 
-import battleapi.dto as dto
-import battleapi.implementations.id_generator as id_gen
 import battleapi.logic.board as b
-import battleapi.logic.configuration.classic_config as classic_cfg
+import battleapi.logic.configs as classic_cfg
 import battleapi.logic.exceptions as ex
-import battleapi.logic.session as s
+import battleapi.logic.game as s
+import battleapi.logic.player as pl
+import battleapi.utils.id_generator as id_gen
 
 
 def create_session():
     id_generator = id_gen.Uuid4IdGenerator()
     config = classic_cfg.ClassicGameConfiguration()
-    session = s.GameSession(id_generator=id_generator, game_config=config)
+    session = s.Game(id_generator=id_generator, game_config=config)
     return session
 
 
@@ -24,10 +24,10 @@ class TestGameSession:
     def test_creation_of_the_game_session_custom_params(self) -> None:
         id_generator = id_gen.Uuid4IdGenerator()
         config = classic_cfg.ClassicGameConfiguration()
-        session = s.GameSession(
+        session = s.Game(
             id_generator=id_generator,
             game_config=config,
-            players={"id": dto.Player("id", "player", b.GameBoard(), {}, {})},
+            players={"id": pl.Player("id", "player", b.Board(), {}, {})},
             active_player_id="test_id",
         )
         assert session.active_player_id == "test_id"

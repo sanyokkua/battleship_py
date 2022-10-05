@@ -1,10 +1,10 @@
 """
-Module contains abstract classes (interfaces) that should be implemented and used for
+Module contains abstract classes (abstract) that should be implemented and used for
 application usage.
 """
 import abc
 
-import battleapi.dto as dto
+import battleapi.api.dto as api_dto
 import battleapi.logic.models as models
 
 
@@ -32,8 +32,8 @@ class DbClient(abc.ABC):
     """
 
     @abc.abstractmethod
-    def save(self, session_id: str, session: dto.SessionState) -> bool:
-        """Save SessionState object to the DB with passed session_id.
+    def save(self, session_id: str, session: api_dto.SessionStateDto) -> bool:
+        """Save SessionStateDto object to the DB with passed session_id.
 
         Args:
             session_id (str): unique identifier of the session. Primary Key.
@@ -44,19 +44,19 @@ class DbClient(abc.ABC):
         """
 
     @abc.abstractmethod
-    def load(self, session_id: str) -> dto.SessionState:
+    def load(self, session_id: str) -> api_dto.SessionStateDto:
         """Load SessionState object from the DB with passed session_id.
 
         Args:
             session_id (str): unique identifier of the session. Primary Key.
 
         Returns:
-            dto.SessionState: Game Session Object.
+            api_dto.SessionStateDto: Game Session Object.
         """
 
     @abc.abstractmethod
     def remove(self, session_id: str) -> bool:
-        """Remove SessionState object from the DB with passed session_id.
+        """Remove SessionStateDto object from the DB with passed session_id.
 
         Args:
             session_id (str): unique identifier of the session. Primary Key.
@@ -77,7 +77,9 @@ class GamePersistence(abc.ABC):
     db_client: DbClient
 
     @abc.abstractmethod
-    def save_session(self, session_id: str, session_state: dto.SessionState) -> bool:
+    def save_session(
+        self, session_id: str, session_state: api_dto.SessionStateDto
+    ) -> bool:
         """Save game session via db_client object.
 
         Args:
@@ -89,14 +91,14 @@ class GamePersistence(abc.ABC):
         """
 
     @abc.abstractmethod
-    def load_session(self, session_id: str) -> dto.SessionState | None:
+    def load_session(self, session_id: str) -> api_dto.SessionStateDto | None:
         """Load game session via db_client object.
 
         Args:
             session_id (str): identifier of the session to be saved. Primary Key.
 
         Returns:
-            dto.SessionState: saved earlier game session state.
+            api_dto.SessionStateDto: saved earlier game session state.
         """
 
     @abc.abstractmethod
@@ -136,7 +138,7 @@ class GameController(abc.ABC):
     @abc.abstractmethod
     def create_player_in_session(
         self, session_id: str, player_name: str
-    ) -> dto.PlayerInfo:
+    ) -> api_dto.PlayerDto:
         """Create player by passed player_name.
 
         Created player will be added to the session by passed session_id.
@@ -146,13 +148,13 @@ class GameController(abc.ABC):
             player_name (str): player name that will be created.
 
         Returns:
-            dto.PlayerInfo: player information object of the created player.
+            api_dto.PlayerDto: player information object of the created player.
         """
 
     @abc.abstractmethod
     def get_opponent_prepare_status(
         self, session_id: str, current_player_id: str
-    ) -> dto.PlayerInfo | None:
+    ) -> api_dto.PlayerDto | None:
         """Return opponent to the passed player_id.
 
         Args:
@@ -161,13 +163,13 @@ class GameController(abc.ABC):
                 of the opponent
 
         Returns:
-            dto.PlayerInfo: opponent player information object.
+            api_dto.PlayerDto: opponent player information object.
         """
 
     @abc.abstractmethod
     def get_prepare_ships_list(
         self, session_id: str, player_id: str
-    ) -> list[models.Ship]:
+    ) -> list[api_dto.ShipDto]:
         """Get list of the available ships for the player on preparation stage.
 
         Args:
@@ -181,7 +183,7 @@ class GameController(abc.ABC):
     @abc.abstractmethod
     def get_prepare_player_field(
         self, session_id: str, player_id: str
-    ) -> list[list[models.Cell]]:
+    ) -> list[list[api_dto.CellDto]]:
         """Return field for the player on the preparation stage.
 
         Args:
@@ -193,7 +195,7 @@ class GameController(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get_opponent(self, session_id: str, player_id: str) -> dto.PlayerInfo | None:
+    def get_opponent(self, session_id: str, player_id: str) -> api_dto.PlayerDto | None:
         """Return opponent information to the current player.
 
         Args:
@@ -201,24 +203,24 @@ class GameController(abc.ABC):
             player_id (str): player id of the current game session.
 
         Returns:
-            dto.PlayerInfo: player information.
+            api_dto.PlayerDto: player information.
         """
 
     @abc.abstractmethod
-    def get_active_player(self, session_id: str) -> dto.PlayerInfo | None:
+    def get_active_player(self, session_id: str) -> api_dto.PlayerDto | None:
         """Return player information who now should have to make a move.
 
         Args:
             session_id (str): session id of the current game session.
 
         Returns:
-            dto.PlayerInfo: player information.
+            api_dto.PlayerDto: player information.
         """
 
     @abc.abstractmethod
     def get_player_by_id(
         self, session_id: str, player_id: str
-    ) -> dto.PlayerInfo | None:
+    ) -> api_dto.PlayerDto | None:
         """Return player for session by its id.
 
         Args:
@@ -226,7 +228,7 @@ class GameController(abc.ABC):
             player_id (str): player id to be returned.
 
         Returns:
-            dto.PlayerInfo: player information.
+            api_dto.PlayerDto: player information.
         """
 
     @abc.abstractmethod
@@ -258,14 +260,14 @@ class GameController(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get_winner(self, session_id: str) -> dto.PlayerInfo:
+    def get_winner(self, session_id: str) -> api_dto.PlayerDto:
         """Return winner of the game.
 
         Args:
             session_id (str): current game session id.
 
         Returns:
-            dto.PlayerInfo: player information.
+            api_dto.PlayerDto: player information.
         """
 
     @abc.abstractmethod
@@ -289,7 +291,7 @@ class GameController(abc.ABC):
 
     @abc.abstractmethod
     def remove_ship_from_field(
-        self, session_id: str, player_id: str, coordinate: models.Coordinate
+        self, session_id: str, player_id: str, coordinate: api_dto.Coordinate
     ) -> None:
         """Remove ship from the field in preparation stage.
 
@@ -314,7 +316,7 @@ class GameController(abc.ABC):
     @abc.abstractmethod
     def make_shot(
         self, session_id: str, player_id: str, coordinate: models.Coordinate
-    ) -> dto.ShotResult:
+    ) -> api_dto.ShotResultDto:
         """Make a shot by the opponent field.
 
         Args:
@@ -323,5 +325,5 @@ class GameController(abc.ABC):
             coordinate (models.Coordinate): coordinate of the cell in opponent field.
 
         Returns:
-            dto.ShotResult: Result of the made shot.
+            api_dto.ShotResultDto: Result of the made shot.
         """

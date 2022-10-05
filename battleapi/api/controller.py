@@ -1,26 +1,26 @@
 """Implementation of the Game Controller functionality."""
-import battleapi.dto as dto
-import battleapi.exceptions as ex
-import battleapi.interfaces as types
-import battleapi.logic.configuration.classic_config as config
-import battleapi.logic.exceptions as l_ex
+import battleapi.abstract as abstract
+import battleapi.api.dto as dto
+import battleapi.logic.configs as config
+import battleapi.logic.exceptions as ex
+import battleapi.logic.game as game
 import battleapi.logic.models as models
-import battleapi.logic.session as engine
+import battleapi.logic.player as pl
 
 
-class ControllerApi(types.GameController):
+class GameControllerApi(abstract.GameController):
     """Implementation for the game controller which responsible to manage all the actions
     related to the game process.
 
     Args:
-        types.GameController (_type_): Inherits interface.
+        abstract.GameController (_type_): Inherits interface.
     """
 
     def __init__(
-        self, persistence: types.GamePersistence, id_generator: types.IdGenerator
-    ):
-        self.persistence: types.GamePersistence = persistence
-        self.id_generator: types.IdGenerator = id_generator
+        self, persistence: abstract.GamePersistence, id_generator: abstract.IdGenerator
+    ) -> None:
+        self.persistence: abstract.GamePersistence = persistence
+        self.id_generator: abstract.IdGenerator = id_generator
 
     def init_game_session(self) -> str:
         """Init new game session.
@@ -34,7 +34,7 @@ class ControllerApi(types.GameController):
         session_id: str = self.id_generator.generate_id()
         res: bool = self.persistence.save_session(
             session_id,
-            dto.SessionState(
+            dto.SessionStateDto(
                 session_id=session_id,
                 game_config=config.ClassicGameConfiguration(),
                 players={},
@@ -47,7 +47,7 @@ class ControllerApi(types.GameController):
 
     def create_player_in_session(
         self, session_id: str, player_name: str
-    ) -> dto.PlayerInfo:
+    ) -> dto.PlayerDto:
         """Create player by passed player_name.
 
         Created player will be added to the session by passed session_id.
@@ -57,16 +57,15 @@ class ControllerApi(types.GameController):
             player_name (str): player name that will be created.
 
         Returns:
-            dto.PlayerInfo: player information object of the created player.
+            dto.PlayerDto: player information object of the created player.
         """
-        game_session: engine.GameSession = self._load_game_session(session_id)
-
+        game_session: game.Game = self._load_game_session(session_id)
         player_id: str = self.id_generator.generate_id()
         game_session.add_player(player_id, player_name)
-        player: dto.Player = game_session.players[player_id]
+        player: pl.Player = game_session.players[player_id]
 
         self._save_game_session(game_session, session_id)
-        return dto.PlayerInfo(
+        return dto.PlayerDto(
             player_name=player.player_name,
             player_id=player.player_id,
             session_id=session_id,
@@ -75,7 +74,7 @@ class ControllerApi(types.GameController):
     def _save_game_session(self, game_session, session_id) -> None:
         self.persistence.save_session(
             session_id,
-            dto.SessionState(
+            dto.SessionStateDto(
                 session_id=session_id,
                 game_config=game_session.game_config,
                 players=game_session.players,
@@ -83,11 +82,11 @@ class ControllerApi(types.GameController):
             ),
         )
 
-    def _load_game_session(self, session_id: str) -> engine.GameSession:
-        session: dto.SessionState | None = self.persistence.load_session(session_id)
+    def _load_game_session(self, session_id: str) -> game.Game:
+        session: dto.SessionStateDto | None = self.persistence.load_session(session_id)
         if session is None:
             raise ex.SessionIsNotCreatedException("Can't load session.")
-        game_session: engine.GameSession = engine.GameSession(
+        game_session: game.Game = game.Game(
             id_generator=self.id_generator,
             game_config=session.game_config,
             players=session.players,
@@ -97,7 +96,7 @@ class ControllerApi(types.GameController):
 
     def get_opponent_prepare_status(
         self, session_id: str, current_player_id: str
-    ) -> dto.PlayerInfo | None:
+    ) -> dto.PlayerDto | None:
         """Return opponent to the passed player_id.
 
         Args:
@@ -106,22 +105,22 @@ class ControllerApi(types.GameController):
                 of the opponent
 
         Returns:
-            dto.PlayerInfo: opponent player information object.
+            dto.PlayerDto: opponent player information object.
         """
-        session: engine.GameSession = self._load_game_session(session_id)
+        session: game.Game = self._load_game_session(session_id)
         try:
-            player: dto.Player = session.get_opponent(current_player_id)
-            return dto.PlayerInfo(
+            player: pl.Player = session.get_opponent(current_player_id)
+            return dto.PlayerDto(
                 player_name=player.player_name,
                 player_id=player.player_id,
                 session_id=session_id,
             )
-        except l_ex.PlayerNotFoundException:
+        except ex.PlayerNotFoundException:
             return None
 
     def get_prepare_ships_list(
         self, session_id: str, player_id: str
-    ) -> list[models.Ship]:
+    ) -> list[dto.ShipDto]:
         """Get list of the available ships for the player on preparation stage.
 
         Args:
@@ -131,13 +130,14 @@ class ControllerApi(types.GameController):
         Returns:
             list: list of the available ships.
         """
-        game_session: engine.GameSession = self._load_game_session(session_id)
+        game_session: game.Game = self._load_game_session(session_id)
         ships: list[models.Ship] = game_session.get_available_ships(player_id)
-        return ships
+        ship_dto: list[dto.ShipDto] = list(map(dto.from_model_ship, ships))
+        return ship_dto
 
     def get_prepare_player_field(
         self, session_id: str, player_id: str
-    ) -> list[list[models.Cell]]:
+    ) -> list[list[dto.CellDto]]:
         """Return field for the player on the preparation stage.
 
         Args:
@@ -147,11 +147,15 @@ class ControllerApi(types.GameController):
         Returns:
             list[list]: field representation.
         """
-        game_session: engine.GameSession = self._load_game_session(session_id)
-        ships: list[list[models.Cell]] = game_session.get_player_board(player_id)
-        return list(ships)
+        game_session: game.Game = self._load_game_session(session_id)
+        board: list[list[models.Cell]] = game_session.get_player_board(player_id)
+        board_dto: list[list[dto.CellDto]] = []
+        for row in board:
+            line: list[dto.CellDto] = list(map(dto.from_model_cell, row))
+            board_dto.append(line)
+        return board_dto
 
-    def get_opponent(self, session_id: str, player_id: str) -> dto.PlayerInfo | None:
+    def get_opponent(self, session_id: str, player_id: str) -> dto.PlayerDto | None:
         """Return opponent information to the current player.
 
         Args:
@@ -159,35 +163,35 @@ class ControllerApi(types.GameController):
             player_id (str): player id of the current game session.
 
         Returns:
-            dto.PlayerInfo: player information.
+            dto.PlayerDto: player information.
         """
-        game_session: engine.GameSession = self._load_game_session(session_id)
+        game_session: game.Game = self._load_game_session(session_id)
         try:
-            player: dto.Player = game_session.get_opponent(player_id)
-            return dto.PlayerInfo(
+            player: pl.Player = game_session.get_opponent(player_id)
+            return dto.PlayerDto(
                 player_name=player.player_name,
                 player_id=player.player_id,
                 session_id=session_id,
             )
-        except l_ex.PlayerNotFoundException:
+        except ex.PlayerNotFoundException:
             return None
 
-    def get_active_player(self, session_id: str) -> dto.PlayerInfo | None:
+    def get_active_player(self, session_id: str) -> dto.PlayerDto | None:
         """Return player information who now should have to make a move.
 
         Args:
             session_id (str): session id of the current game session.
 
         Returns:
-            dto.PlayerInfo: player information.
+            dto.PlayerDto: player information.
         """
-        session: engine.GameSession = self._load_game_session(session_id)
+        session: game.Game = self._load_game_session(session_id)
         player_id: str = session.active_player_id
         if player_id is None or player_id == "":
             return None
         try:
-            player: dto.Player = session.players[player_id]
-            return dto.PlayerInfo(
+            player: pl.Player = session.players[player_id]
+            return dto.PlayerDto(
                 player_name=player.player_name,
                 player_id=player.player_id,
                 session_id=session_id,
@@ -195,9 +199,7 @@ class ControllerApi(types.GameController):
         except KeyError:
             return None
 
-    def get_player_by_id(
-        self, session_id: str, player_id: str
-    ) -> dto.PlayerInfo | None:
+    def get_player_by_id(self, session_id: str, player_id: str) -> dto.PlayerDto | None:
         """Return player for session by its id.
 
         Args:
@@ -205,12 +207,12 @@ class ControllerApi(types.GameController):
             player_id (str): player id to be returned.
 
         Returns:
-            dto.PlayerInfo: player information.
+            dto.PlayerDto: player information.
         """
-        session = self._load_game_session(session_id)
+        session: game.Game = self._load_game_session(session_id)
         try:
-            player: dto.Player = session.players[player_id]
-            return dto.PlayerInfo(
+            player: pl.Player = session.players[player_id]
+            return dto.PlayerDto(
                 player_name=player.player_name,
                 player_id=player.player_id,
                 session_id=session_id,
@@ -228,15 +230,15 @@ class ControllerApi(types.GameController):
         Returns:
             int: number of available cells.
         """
-        session: engine.GameSession = self._load_game_session(session_id)
+        session: game.Game = self._load_game_session(session_id)
         if session.is_game_ready():
-            player: dto.Player = session.players[player_id]
+            player: pl.Player = session.players[player_id]
             return player.board.get_amount_of_not_shot_cells()
         return 0
 
     def get_field(
         self, session_id: str, player_id: str, is_for_opponent: bool = False
-    ) -> list[list[models.Cell]]:
+    ) -> list[list[dto.CellDto]]:
         """Return field representation for player.
 
         Args:
@@ -248,25 +250,33 @@ class ControllerApi(types.GameController):
         Returns:
             list[list]: field representation.
         """
-        session: engine.GameSession = self._load_game_session(session_id)
-        if is_for_opponent:
-            return session.get_player_board(player_id, is_hidden=True)
-        return session.get_player_board(player_id)
+        session: game.Game = self._load_game_session(session_id)
 
-    def get_winner(self, session_id: str) -> dto.PlayerInfo | None:
+        board: list[list[models.Cell]] = None
+        if is_for_opponent:
+            board = session.get_player_board(player_id, is_hidden=True)
+        else:
+            board = session.get_player_board(player_id)
+        board_dto: list[list[dto.CellDto]] = []
+        for row in board:
+            line: list[dto.CellDto] = list(map(dto.from_model_cell, row))
+            board_dto.append(line)
+        return board_dto
+
+    def get_winner(self, session_id: str) -> dto.PlayerDto | None:
         """Return winner of the game.
 
         Args:
             session_id (str): current game session id.
 
         Returns:
-            dto.PlayerInfo: player information.
+            dto.PlayerDto: player information.
         """
-        session: engine.GameSession = self._load_game_session(session_id)
-        winner: dto.Player | None = session.get_winner()
+        session: game.Game = self._load_game_session(session_id)
+        winner: pl.Player | None = session.get_winner()
         if winner is None:
             return None
-        return dto.PlayerInfo(
+        return dto.PlayerDto(
             player_name=winner.player_name,
             player_id=winner.player_id,
             session_id=session_id,
@@ -289,7 +299,7 @@ class ControllerApi(types.GameController):
             coordinate (models.Coordinate): coordinate of the cell.
             ship_direction (str): direction of the ship.
         """
-        session: engine.GameSession = self._load_game_session(session_id)
+        session: game.Game = self._load_game_session(session_id)
         ships: dict[str, models.Ship] = session.players[player_id].ships_not_on_board
         ship: models.Ship = ships[ship_id]
         ship.direction = models.Direction[ship_direction]
@@ -305,7 +315,7 @@ class ControllerApi(types.GameController):
             player_id (str): player id who removes ship.
             coordinate (models.Coordinate): coordinate of the cell.
         """
-        session: engine.GameSession = self._load_game_session(session_id)
+        session: game.Game = self._load_game_session(session_id)
         session.remove_ship(player_id, coordinate)
 
     def start_game(self, session_id: str, player_id: str) -> None:
@@ -318,12 +328,12 @@ class ControllerApi(types.GameController):
             session_id (str): current game session id.
             player_id (str): current player id.
         """
-        session: engine.GameSession = self._load_game_session(session_id)
+        session: game.Game = self._load_game_session(session_id)
         session.make_player_ready(player_id)
 
     def make_shot(
         self, session_id: str, player_id: str, coordinate: models.Coordinate
-    ) -> dto.ShotResult:
+    ) -> dto.ShotResultDto:
         """Make a shot by the opponent field.
 
         Args:
@@ -332,11 +342,11 @@ class ControllerApi(types.GameController):
             coordinate (models.Coordinate): coordinate of the cell in opponent field.
 
         Returns:
-            dto.ShotResult: Result of the made shot.
+            dto.ShotResultDto: Result of the made shot.
         """
-        session: engine.GameSession = self._load_game_session(session_id)
+        session: game.Game = self._load_game_session(session_id)
         session.make_shot(player_id, coordinate)
         is_finished: bool = session.is_game_finished()
-        return dto.ShotResult(
+        return dto.ShotResultDto(
             is_finished=is_finished, next_player=session.active_player_id
         )

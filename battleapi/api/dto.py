@@ -16,6 +16,8 @@ class CellDto:
     ship_id: str | None = None
     has_ship: bool = False
     has_shot: bool = False
+    row: int = 0
+    col: int = 0
 
 
 @dataclasses.dataclass

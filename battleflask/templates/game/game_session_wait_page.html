@@ -6,7 +6,7 @@ Wait for other player
 
 {% block javascript %}
 {{ super() }}
-<body onload="refreshPageOnTime('{{ game_status_page_url }}');">
+<!--<body onload="refreshPageOnTime('{{ url_get_update }}');">-->
 {% endblock javascript %}
 
 {% block body %}
@@ -19,17 +19,23 @@ Wait for other player
         </p>
     </div>
     <div>
-        <h1><span>{{ session_id }}</span></h1>
+        <h1><span>{{ game_session_id }}</span></h1>
     </div>
     <div>
-        <p>Player who created session is {{ current_player }}</p>
+        <p>Player who created session is {{ current_player_name }}</p>
     </div>
     <br/>
     <div>
         <p>Opponent name {{ opponent_name }}</p>
     </div>
-    <form action="{{ game_status_page_url }}" method="get">
+    {% if opponent_name|length %}
+    <form action="{{ url_get_prepare }}" method="get">
+        <input type="submit" value="Next"/>
+    </form>
+    {% else %}
+    <form action="{{ url_get_update }}" method="get">
         <input type="submit" value="Update"/>
     </form>
+    {% endif %}
 </div>
 {% endblock body %}

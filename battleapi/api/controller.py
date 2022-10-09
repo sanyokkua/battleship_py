@@ -12,6 +12,18 @@ import battleapi.logic.player as pl
 log: logging.Logger = logging.getLogger(__name__)
 
 
+def index_board(board_dto: list[list[dto.CellDto]]) -> list[list[dto.CellDto]]:
+    indexed_board: list[list[dto.CellDto]] = []
+    for row_index, row in enumerate(board_dto):
+        indexed_row: list[dto.CellDto] = []
+        for col_index, cell in enumerate(row):
+            cell.row = row_index
+            cell.col = col_index
+            indexed_row.append(cell)
+        indexed_board.append(indexed_row)
+    return indexed_board
+
+
 class GameControllerApi(abstract.GameController):
     """Implementation for the game controller which responsible to manage all the actions
     related to the game process.
@@ -172,7 +184,7 @@ class GameControllerApi(abstract.GameController):
             line: list[dto.CellDto] = list(map(dto.from_model_cell, row))
             board_dto.append(line)
         log.debug("Field: %s", board_dto)
-        return board_dto
+        return index_board(board_dto)
 
     def get_opponent(self, session_id: str, player_id: str) -> dto.PlayerDto | None:
         """Return opponent information to the current player.
@@ -299,7 +311,7 @@ class GameControllerApi(abstract.GameController):
             line: list[dto.CellDto] = list(map(dto.from_model_cell, row))
             board_dto.append(line)
         log.debug("Board: %s", board_dto)
-        return board_dto
+        return index_board(board_dto)
 
     def get_winner(self, session_id: str) -> dto.PlayerDto | None:
         """Return winner of the game.

@@ -32,7 +32,7 @@ def validate_is_correct_coordinate(value: int | None) -> None:
     Raises:
         ex.IsNotValidCoordinateException: _description_
     """
-    if is_correct_coordinate(value):
+    if not is_correct_coordinate(value):
         raise ex.IsNotValidCoordinateException(
             f'Passed value "{value}" is not valid coordinate'
         )

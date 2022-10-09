@@ -88,11 +88,13 @@ def render_prepare_page(
     opponent_status: str,
     ships_list: [],
     field: list[list],
+    active_ship: str,
     errors: list[str] | None = None,
 ) -> str:
     """_summary_
 
     Args:
+        active_ship (str): _desc_
         session_id (str): _description_
         current_player_name (str): _description_
         opponent_status (str): _description_
@@ -112,6 +114,9 @@ def render_prepare_page(
     url_post_delship: str = url_for_session(
         "_post_session_prepare_delship_redirect_to_prepare_page", session_id
     )
+    url_post_chose_ship: str = url_for_session(
+        "_post_session_prepare_chose_ship_redirect_to_prepare_page", session_id
+    )
     url_get_opponent: str = url_for_session("_get_session_prepare_opponent", session_id)
     log.debug("url_post_start: %s", url_post_start)
     log.debug("url_post_addship: %s", url_post_addship)
@@ -122,12 +127,14 @@ def render_prepare_page(
         "game/game_session_prepare_page.html",
         url_post_start=url_post_start,
         url_post_addship=url_post_addship,
+        url_post_chose_ship=url_post_chose_ship,
         url_post_delship=url_post_delship,
         url_get_opponent=url_get_opponent,
         current_player_name=current_player_name,
         opponent_status=opponent_status,
         ships_list=ships_list,
         field=field,
+        active_ship_id=active_ship,
         errors_list=errors,
     )
 

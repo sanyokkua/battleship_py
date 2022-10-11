@@ -10,7 +10,9 @@
 import battleflask.app.exceptions as ex
 
 
-def validate_is_not_empty_string(value: str | None) -> None:
+def validate_is_not_empty_string(
+    value: str | None, var_name: str | None = None
+) -> None:
     """_summary_
 
     Args:
@@ -20,10 +22,14 @@ def validate_is_not_empty_string(value: str | None) -> None:
         ex.IsEmptyStringException: _description_
     """
     if is_empty_string(value):
-        raise ex.IsEmptyStringException(f'Passed value "{value}" is not valid')
+        raise ex.IsEmptyStringException(
+            f'Passed value {var_name}-> "{value}" is not valid'
+        )
 
 
-def validate_is_correct_coordinate(value: int | None) -> None:
+def validate_is_correct_coordinate(
+    value: int | None, var_name: str | None = None
+) -> None:
     """_summary_
 
     Args:
@@ -34,7 +40,7 @@ def validate_is_correct_coordinate(value: int | None) -> None:
     """
     if not is_correct_coordinate(value):
         raise ex.IsNotValidCoordinateException(
-            f'Passed value "{value}" is not valid coordinate'
+            f'Passed value {var_name}->"{value}" is not valid coordinate'
         )
 
 

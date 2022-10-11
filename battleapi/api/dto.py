@@ -36,6 +36,7 @@ class PlayerDto:
     player_name: str
     player_id: str
     session_id: str
+    is_ready: bool = False
 
 
 @dataclasses.dataclass

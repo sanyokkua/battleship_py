@@ -90,6 +90,7 @@ class GameControllerApi(abstract.GameController):
             player_name=player.player_name,
             player_id=player.player_id,
             session_id=session_id,
+            is_ready=player.is_ready,
         )
 
     def _save_game_session(self, game_session, session_id) -> None:
@@ -139,6 +140,7 @@ class GameControllerApi(abstract.GameController):
                 player_name=player.player_name,
                 player_id=player.player_id,
                 session_id=session_id,
+                is_ready=player.is_ready,
             )
         except ex.PlayerNotFoundException:
             log.warning("Opponent is not found for player: %s", current_player_id)
@@ -161,6 +163,7 @@ class GameControllerApi(abstract.GameController):
         game_session: game.Game = self._load_game_session(session_id)
         ships: list[models.Ship] = game_session.get_available_ships(player_id)
         ships_dto: list[dto.ShipDto] = list(map(dto.from_model_ship, ships))
+        ships_dto.sort(key=lambda ship: ship.ship_size)
         log.debug("ships: %s", ships_dto)
         return ships_dto
 
@@ -205,6 +208,7 @@ class GameControllerApi(abstract.GameController):
                 player_name=player.player_name,
                 player_id=player.player_id,
                 session_id=session_id,
+                is_ready=player.is_ready,
             )
         except ex.PlayerNotFoundException:
             log.debug("Opponent not found for current_player: %", player_id)
@@ -233,6 +237,7 @@ class GameControllerApi(abstract.GameController):
                 player_name=player.player_name,
                 player_id=player.player_id,
                 session_id=session_id,
+                is_ready=player.is_ready,
             )
         except KeyError:
             log.debug("Player not found in the session")
@@ -257,6 +262,7 @@ class GameControllerApi(abstract.GameController):
                 player_name=player.player_name,
                 player_id=player.player_id,
                 session_id=session_id,
+                is_ready=player.is_ready,
             )
         except KeyError:
             log.debug("Player not found in the session")

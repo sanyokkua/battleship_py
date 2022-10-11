@@ -14,26 +14,26 @@ Add your ships to the board
 {% block body %}
 {{ super() }}
 
-{{ url_post_start }}
-<br/>
-{{ url_post_addship }}
-<br/>
-{{ url_post_delship }}
-<br/>
-{{ url_get_opponent }}
-<br/>
-{{ current_player_name }}
-<br/>
-{{ opponent_status }}
-<br/>
-{{ ships_list }}
-<br/>
-{{ field }}
-<br/>
-{{ errors_list }}
-<br/>
-{{ active_ship_id }}
-<br/>
+<!--{{ url_post_start }}-->
+<!--<br/>-->
+<!--{{ url_post_addship }}-->
+<!--<br/>-->
+<!--{{ url_post_delship }}-->
+<!--<br/>-->
+<!--{{ url_get_opponent }}-->
+<!--<br/>-->
+<!--{{ player_name }}-->
+<!--<br/>-->
+<!--{{ opponent_status }}-->
+<!--<br/>-->
+<!--{{ ships_list }}-->
+<!--<br/>-->
+<!--{{ field }}-->
+<!--<br/>-->
+<!--{{ errors_list }}-->
+<!--<br/>-->
+<!--{{ active_ship_id }}-->
+<!--<br/>-->
 <div>
     <div>
         <div>
@@ -41,14 +41,37 @@ Add your ships to the board
             <ul>
                 {% for ship in ships_list %}
                 <li>
-                    <form id="form_ship_id_{{loop.index0}}" action="{{ url_post_chose_ship }}" method="post">
-                        <input type="hidden" id="active_ship_id" name="active_ship_id" value="{{ ship.ship_id }}"/>
-                        {% if active_ship_id == ship.ship_id %}
-                        <button type="submit">Ship Size = {{ ship.ship_size }}, <h4>ACTIVE</h4></button>
-                        {% else %}
-                        <button type="submit">Ship Size = {{ ship.ship_size }}</button>
-                        {% endif %}
-                    </form>
+                    <table>
+                        <tr>
+                            <form id="form_ship_id_{{loop.index0}}" action="{{ url_post_chose_ship }}" method="post">
+                                <input type="hidden" id="active_ship_id" name="active_ship_id" value="{{ ship.ship_id }}"/>
+                                <td>
+                                    Ship Size: {{ship.ship_size}}
+                                </td>
+                                {% if ship.direction == "HORIZONTAL" %}
+                                {% set horizontal_active = "checked" %}
+                                {% set vertical_active = "" %}
+                                {% else %}
+                                {% set horizontal_active = "" %}
+                                {% set vertical_active = "checked" %}
+                                {% endif %}
+                                {% if ship.ship_id == active_ship_id %}
+                                {% set is_disabled = "disabled" %}
+                                {% endif %}
+                                <td>
+                                    <input type="radio" id="ship_horizontal" name="ship_direction" value="HORIZONTAL" {{ is_disabled }} {{ horizontal_active }}>
+                                    <label for="ship_horizontal">Horizontal</label>
+                                    <br>
+                                    <input type="radio" id="ship_vertical" name="ship_direction" value="VERTICAL" {{ is_disabled }} {{ vertical_active }}>
+                                    <label for="ship_vertical">Vertical</label>
+                                    <br>
+                                </td>
+                                <td>
+                                    <button type="submit" {{ is_disabled }}>Chose</button>
+                                </td>
+                            </form>
+                        </tr>
+                    </table>
                 </li>
                 {% endfor %}
             </ul>
@@ -59,29 +82,27 @@ Add your ships to the board
         </div>
         <table>
             {% for row in field %}
-                {% set row_index = loop.index0 %}
+            {% set row_index = loop.index0 %}
             <tr>
                 {% for cell in row %}
                 <td>
                     {% if cell.has_ship %}
-                    <form id="form_cell_ship_{{row_index}}_{{loop.index0}}" action="{{ url_post_delship }}" method="post">
-                        <input type="hidden" id="ship_coordinate_row" name="ship_coordinate_row" value="{{ cell.row }}"/>
-                        <input type="hidden" id="ship_coordinate_col" name="ship_coordinate_col" value="{{ cell.col }}"/>
-                        <input type="submit" value="*"/>
-                    </form>
+                    {% set cell_url = url_post_delship %}
+                    {% set button_value = "*" %}
                     {% else %}
-                    <form id="form_cell_ship_{{row_index}}_{{loop.index0}}" action="{{ url_post_addship }}" method="post">
-                        <input type="hidden" id="ship_coordinate_row" name="ship_coordinate_row" value="{{ cell.row }}"/>
-                        <input type="hidden" id="ship_coordinate_col" name="ship_coordinate_col" value="{{ cell.col }}"/>
-                        <input type="hidden" id="cell_active_ship_id" name="cell_active_ship_id" value="{{ active_ship_id }}"/>
-                        <select id="ship_direction" name="ship_direction">
-                            <option value="HORIZONTAL">Horizontal</option>
-                            <option value="VERTICAL">Vertical</option>
-                        </select>
-                        <input type="submit" value=""/>
-                    </form>
+                    {% set cell_url = url_post_addship %}
+                    {% set button_value = "" %}
                     {% endif %}
-
+                    <form id="form_cell_ship_{{row_index}}_{{loop.index0}}" action="{{ cell_url }}"
+                          method="post">
+                        <input type="hidden" id="ship_coordinate_row" name="ship_coordinate_row"
+                               value="{{ cell.row }}"/>
+                        <input type="hidden" id="ship_coordinate_col" name="ship_coordinate_col"
+                               value="{{ cell.col }}"/>
+                        <input type="hidden" id="cell_active_ship_id" name="cell_active_ship_id"
+                               value="{{ active_ship_id }}"/>
+                        <input type="submit" value="{{ button_value }}"/>
+                    </form>
                 </td>
                 {% endfor %}
             </tr>

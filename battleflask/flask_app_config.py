@@ -3,7 +3,8 @@ import os
 
 from flask import Flask
 
-from battleflask.app.controllers import game_controller, index_controller
+from battleflask.app.controllers import (game_common, gameplay, index, players,
+                                         preparation)
 
 
 def configure_flask_app(application: Flask, test_config=None) -> None:
@@ -28,5 +29,8 @@ def configure_flask_app(application: Flask, test_config=None) -> None:
         os.makedirs(application.instance_path)
     except OSError:
         pass
-    application.register_blueprint(index_controller.INDEX_BLUEPRINT)
-    application.register_blueprint(game_controller.GAME_BLUEPRINT)
+    application.register_blueprint(index.INDEX_CONTROLLER)
+    application.register_blueprint(players.PLAYERS_CONTROLLER)
+    application.register_blueprint(game_common.GAME_COMMON_CONTROLLER)
+    application.register_blueprint(preparation.PREPARATION_CONTROLLER)
+    application.register_blueprint(gameplay.GAME_PLAY_CONTROLLER)

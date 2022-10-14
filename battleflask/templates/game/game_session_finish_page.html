@@ -6,20 +6,15 @@ Game is finished
 
 {% block body %}
 {{ super() }}
-<div>
-
-    <div>
-        <h1>Game is Finished</h1>
-    </div>
-    <br/>
-    <div>
-        <h2>Player {{ winner_player_name }} has win this game </h2>
-    </div>
-    <br/>
-    <div>
-        <p>
-            <a href="{{ url_get_index }}">Return to the main page</a>
-        </p>
-    </div>
+<div id="header_of_the_page_container">
+    <h1>Game is Finished</h1>
+</div>
+<br/>
+<div id="player_information_container">
+    <h2>Player <span class="badge text-bg-success">{{ winner_player_name }} </span> has win this game </h2>
+</div>
+<br/>
+<div id="link_to_main_page_container">
+    <a class="btn btn-outline-primary" href="{{ url_get_index }}">Return to the main page</a>
 </div>
 {% endblock body %}

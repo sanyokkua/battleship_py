@@ -78,7 +78,8 @@ def _get_session_prepare_page(session_id: str) -> str:
     return render_utils.render_prepare_page(
         session_id=session_id,
         player_name=player.player_name,
-        opponent_status=f"{opponent.player_name} is ready: {opponent.is_ready}",
+        opponent_name=opponent.player_name,
+        opponent_status=opponent.is_ready,
         ships_list=ships_list,
         field=field,
         active_ship=render_ship_id,

@@ -102,7 +102,8 @@ def render_wait_page(session_id: str, player_name: str, opponent_name: str) -> s
 def render_prepare_page(
     session_id: str,
     player_name: str,
-    opponent_status: str,
+    opponent_name: str,
+    opponent_status: bool,
     ships_list: list[dto.ShipDto],
     field: list[list[dto.CellDto]],
     active_ship: str,
@@ -135,6 +136,7 @@ def render_prepare_page(
         url_post_delship=url_post_delship,
         url_get_opponent=url_get_opponent,
         player_name=player_name,
+        opponent_name=opponent_name,
         opponent_status=opponent_status,
         ships_list=ships_list,
         field=field,

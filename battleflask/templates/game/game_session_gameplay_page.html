@@ -4,99 +4,91 @@
 Gameplay
 {% endblock page_title %}
 
-
 {% block javascript %}
 {{ super() }}
-<!--<body onload="refreshPageOnTime('{{ game_status_page_url }}', 5);">-->
+<body onload="refreshPageOnTime('{{ game_status_page_url }}', 5);"></body>
 {% endblock javascript %}
-
 
 {% block body %}
 {{ super() }}
-<div>
-    <div>
-        <div>
-            <p>
-            <h2>Turn of {{ active_player_name }}</h2>
-            </p>
-        </div>
-        <br/>
-        <div>
-            <h1>Your Field {{ current_player_name }}</h1>
-            <table>
-                {% for row in player_field %}
-                {% set row_index = loop.index0 %}
-                <tr>
-                    {% for cell in row %}
-                    <td>
-                        {% if cell.has_ship and cell.has_shot %}
-                        {% set button_value = "X" %}
-                        {% elif cell.has_ship %}
-                        {% set button_value = "#" %}
-                        {% elif cell.has_shot %}
-                        {% set button_value = "*" %}
-                        {% else %}
-                        {% set button_value = "_" %}
-                        {% endif %}
-                        <button disabled>{{ button_value }}</button>
-                    </td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </table>
-            <div>
-                <p>Number of cells left: {{ number_of_cells_self }}</p>
-            </div>
-        </div>
-        <br/>
-        <div>
-            <h1>Opponent Field {{ opponent_name }}</h1>
-            <table>
+<div id="hidden_form_of_the_opponent">
+    {% for row in opponent_field %}
+    {% set row_index = loop.index0 %}
+    {% for cell in row %}
+    <form action="{{ url_post_shot }}" id="form_cell_ship_{{row_index}}_{{loop.index0}}" method="post">
+        <input id="ship_coordinate_row_{{row_index}}_{{loop.index0}}" name="ship_coordinate_row" type="hidden"
+               value="{{ cell.row }}"/>
+        <input id="ship_coordinate_col_{{row_index}}_{{loop.index0}}" name="ship_coordinate_col" type="hidden"
+               value="{{ cell.col }}"/>
+    </form>
+    {% endfor %}
+    {% endfor %}
+</div>
+<div id="turn_information_container" class="container-fluid text-center">
+    {% if active_player_name == current_player_name %}
+    {% set badge_style="text-bg-success" %}
+    {% else %}
+    {% set badge_style="text-bg-danger" %}
+    {% endif %}
+    <p>Now is a turn of the player <span class="badge {{badge_style}}">{{ active_player_name }}</span></p>
+</div>
+<div id="fields_container" class="container-fluid text-center">
+    <div class="row">
+        <div id="opponent_field_container" class="col text-center">
+            <p>Field of: <span class="badge text-bg-warning">{{ opponent_name }}</span></p>
+            <div id="opponent_field_cells" class="grid_div">
                 {% for row in opponent_field %}
                 {% set row_index = loop.index0 %}
-                <tr>
-                    {% for cell in row %}
-                    <td>
-                        {% if cell.has_ship and cell.has_shot %}
-                        {% set button_value = "X" %}
-                        {% elif cell.has_shot %}
-                        {% set button_value = "*" %}
-                        {% else %}
-                        {% set button_value = "_" %}
-                        {% endif %}
-
-
-                        {% if not is_opponent_ready or active_player_name != current_player_name or cell.has_shot %}
-                        {% set is_disabled = "disabled" %}
-                        {% else %}
-                        {% set is_disabled = "" %}
-                        {% endif %}
-
-                        <form action="{{ url_post_shot }}" id="form_cell_ship_{{row_index}}_{{loop.index0}}"
-                              method="post">
-                            <input id="ship_coordinate_row" name="ship_coordinate_row" type="hidden"
-                                   value="{{ cell.row }}"/>
-                            <input id="ship_coordinate_col" name="ship_coordinate_col" type="hidden"
-                                   value="{{ cell.col }}"/>
-                            <input {{ is_disabled }} type="submit" value="{{ button_value }}"/>
-                        </form>
-                    </td>
-                    {% endfor %}
-                </tr>
+                {% for cell in row %}
+                {% if cell.has_ship and cell.has_shot %}
+                {% set btn_style = "btn-danger" %}
+                {% elif cell.has_shot %}
+                {% set btn_style = "btn-secondary" %}
+                {% else %}
+                {% set btn_style = "btn-outline-primary" %}
+                {% endif %}
+                {% if not is_opponent_ready or active_player_name != current_player_name or cell.has_shot %}
+                {% set is_disabled = "disabled" %}
+                {% else %}
+                {% set is_disabled = "" %}
+                {% endif %}
+                <button id="opponent_cell_button_{{row_index}}_{{loop.index0}}"
+                        form="form_cell_ship_{{row_index}}_{{loop.index0}}"
+                        class="col ratio ratio-1x1 border border-dark btn btn-sm btn-square-sm {{ btn_style }}"
+                        {{ is_disabled }}></button>
                 {% endfor %}
-            </table>
-            <div>
-                <p>Number of cells left: {{number_of_cells_opponent}}</p>
+                {% endfor %}
             </div>
         </div>
-        <br/>
-        <div>
-            <form action="{{ url_get_update }}" method="get">
-                <input type="submit" value="Update">
-            </form>
+    </div>
+    <div class="row">
+        <div id="player_field_container" class="col text-center">
+            <p>Field of: <span class="badge text-bg-primary">{{ current_player_name }}</span></p>
+            <div id="player_field_cells" class="grid_div">
+                {% for row in player_field %}
+                {% set row_index = loop.index0 %}
+                {% for cell in row %}
+                {% if cell.has_ship and cell.has_shot %}
+                {% set btn_style = "btn-danger" %}
+                {% elif cell.has_ship %}
+                {% set btn_style = "btn-success" %}
+                {% elif cell.has_shot %}
+                {% set btn_style = "btn-secondary" %}
+                {% else %}
+                {% set btn_style = "btn-outline-primary" %}
+                {% endif %}
+                <button id="player_cell_button_{{row_index}}_{{loop.index0}}"
+                        class="col ratio ratio-1x1 border border-dark btn btn-sm btn-square-sm {{ btn_style }}"
+                        disabled></button>
+                {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     </div>
-    <br/>
 </div>
-
+<div id="update_button_container" class="container-fluid text-center">
+    <form action="{{ url_get_update }}" method="get">
+        <button type="submit" class="btn btn-info">Update</button>
+    </form>
+</div>
 {% endblock body %}

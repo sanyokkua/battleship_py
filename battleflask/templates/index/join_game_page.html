@@ -6,23 +6,17 @@ Join to the game
 
 {% block body %}
 {{ super() }}
-
 <div>
     <form action="{{ url_post_join_game_session }}" method="post">
-        <div>
-            <label for="player_name">Name:</label>
-            <div>
-                <input type="text" name="player_name" id="player_name"/>
-            </div>
+        <div class="mb-3">
+            <label for="player_name" class="form-label">Player Name</label>
+            <input type="text" class="form-control" id="player_name" name="player_name" placeholder="your name">
         </div>
-        <div>
-            <label for="session_id">Shared session ID:</label>
-            <div>
-                <input type="text" name="session_id" id="session_id"/>
-            </div>
+        <div class="mb-3">
+            <label for="session_id"  class="form-label">Shared session ID</label>
+            <input type="text" class="form-control" id="session_id" name="session_id" placeholder="f7adbf21-dec9-4a20-9cde-759a9bde8b44"/>
         </div>
-        <br/>
-        <input type="submit" value="Join"/>
+        <input class="btn btn-primary" type="submit" value="Join"/>
     </form>
 </div>
 {% endblock body %}

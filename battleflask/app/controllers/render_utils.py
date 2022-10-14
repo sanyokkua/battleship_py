@@ -153,6 +153,7 @@ def render_gameplay_page(
     number_of_cells_opponent: int,
     player_field: list[list[dto.CellDto]],
     opponent_field: list[list[dto.CellDto]],
+    is_opponent_ready: bool,
     errors: list[str] | None = None,
 ) -> str:
     url_get_new_game_view: str = gen_url_index(URL_GET_NEW)
@@ -178,6 +179,7 @@ def render_gameplay_page(
         number_of_cells_opponent=number_of_cells_opponent,
         player_field=player_field,
         opponent_field=opponent_field,
+        is_opponent_ready=is_opponent_ready,
         errors_list=errors,
     )
 

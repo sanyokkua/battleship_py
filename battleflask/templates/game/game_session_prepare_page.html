@@ -4,115 +4,134 @@
 Add your ships to the board
 {% endblock page_title %}
 
-
 {% block javascript %}
 {{ super() }}
-<!--<body onload="refreshPageOnTime('{{ game_status_page_url }}', 5);">-->
+<!--<body onload="refreshPageOnTime('{{ game_status_page_url }}', 10);">-->
 {% endblock javascript %}
-
 
 {% block body %}
 {{ super() }}
-
-<!--{{ url_post_start }}-->
-<!--<br/>-->
-<!--{{ url_post_addship }}-->
-<!--<br/>-->
-<!--{{ url_post_delship }}-->
-<!--<br/>-->
-<!--{{ url_get_opponent }}-->
-<!--<br/>-->
-<!--{{ player_name }}-->
-<!--<br/>-->
-<!--{{ opponent_status }}-->
-<!--<br/>-->
-<!--{{ ships_list }}-->
-<!--<br/>-->
-<!--{{ field }}-->
-<!--<br/>-->
-<!--{{ errors_list }}-->
-<!--<br/>-->
-<!--{{ active_ship_id }}-->
-<!--<br/>-->
-<div>
-    <div>
-        <div>
-            <h1>Your Ships</h1>
-            <ul>
-                {% for ship in ships_list %}
-                <li>
-                    <table>
-                        <tr>
-                            <form id="form_ship_id_{{loop.index0}}" action="{{ url_post_chose_ship }}" method="post">
-                                <input type="hidden" id="active_ship_id" name="active_ship_id" value="{{ ship.ship_id }}"/>
-                                <td>
-                                    Ship Size: {{ship.ship_size}}
-                                </td>
-                                {% if ship.direction == "HORIZONTAL" %}
-                                {% set horizontal_active = "checked" %}
-                                {% set vertical_active = "" %}
-                                {% else %}
-                                {% set horizontal_active = "" %}
-                                {% set vertical_active = "checked" %}
-                                {% endif %}
-                                {% if ship.ship_id == active_ship_id %}
-                                {% set is_disabled = "disabled" %}
-                                {% endif %}
-                                <td>
-                                    <input type="radio" id="ship_horizontal" name="ship_direction" value="HORIZONTAL" {{ is_disabled }} {{ horizontal_active }}>
-                                    <label for="ship_horizontal">Horizontal</label>
-                                    <br>
-                                    <input type="radio" id="ship_vertical" name="ship_direction" value="VERTICAL" {{ is_disabled }} {{ vertical_active }}>
-                                    <label for="ship_vertical">Vertical</label>
-                                    <br>
-                                </td>
-                                <td>
-                                    <button type="submit" {{ is_disabled }}>Chose</button>
-                                </td>
-                            </form>
-                        </tr>
-                    </table>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div>
-            <h2>Opponent Status</h2>
-            <p>{{opponent_status}}</p>
-        </div>
-        <table>
-            {% for row in field %}
-            {% set row_index = loop.index0 %}
-            <tr>
-                {% for cell in row %}
-                <td>
-                    {% if cell.has_ship %}
-                    {% set cell_url = url_post_delship %}
-                    {% set button_value = "*" %}
-                    {% else %}
-                    {% set cell_url = url_post_addship %}
-                    {% set button_value = "" %}
-                    {% endif %}
-                    <form id="form_cell_ship_{{row_index}}_{{loop.index0}}" action="{{ cell_url }}"
-                          method="post">
-                        <input type="hidden" id="ship_coordinate_row" name="ship_coordinate_row"
-                               value="{{ cell.row }}"/>
-                        <input type="hidden" id="ship_coordinate_col" name="ship_coordinate_col"
-                               value="{{ cell.col }}"/>
-                        <input type="hidden" id="cell_active_ship_id" name="cell_active_ship_id"
-                               value="{{ active_ship_id }}"/>
-                        <input type="submit" value="{{ button_value }}"/>
-                    </form>
-                </td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </table>
+<div id="hidden_ship_forms">
+    {% for ship in ships_list %}
+    <form id="form_ship_id_{{loop.index0}}_vertical" action="{{ url_post_chose_ship }}" method="post">
+        <input id="active_ship_id_v" name="active_ship_id" type="hidden" value="{{ ship.ship_id }}"/>
+        <input id="ship_vertical" name="ship_direction" type="hidden" value="VERTICAL">
+    </form>
+    <form id="form_ship_id_{{loop.index0}}_horizontal" action="{{ url_post_chose_ship }}" method="post">
+        <input id="active_ship_id_h" name="active_ship_id" type="hidden" value="{{ ship.ship_id }}"/>
+        <input id="ship_horizontal" name="ship_direction" type="hidden" value="HORIZONTAL">
+    </form>
+    {% endfor %}
+</div>
+<div id="hidden_forms_with_ships_cell_values">
+    {% for row in field %}
+    {% set row_index = loop.index0 %}
+    {% for cell in row %}
+    {% if cell.has_ship %}
+    {% set cell_url = url_post_delship %}
+    {% else %}
+    {% set cell_url = url_post_addship %}
+    {% endif %}
+    <form id="form_cell_ship_{{row_index}}_{{loop.index0}}" action="{{ cell_url }}" method="post">
+        <input id="ship_coordinate_row_{{row_index}}_{{loop.index0}}"
+               name="ship_coordinate_row"
+               type="hidden"
+               value="{{ cell.row }}"/>
+        <input id="ship_coordinate_col_{{row_index}}_{{loop.index0}}"
+               name="ship_coordinate_col"
+               type="hidden"
+               value="{{ cell.col }}"/>
+        <input id="cell_active_ship_id_{{row_index}}_{{loop.index0}}"
+               name="cell_active_ship_id"
+               type="hidden"
+               value="{{ active_ship_id }}"/>
+    </form>
+    {% endfor %}
+    {% endfor %}
+</div>
+<div id="body_container" class="container" style="background: #00dd00">
+    <div id="opponent_status_container_row" class="row" style="background: darkgray">
+        <p>Opponent Status: <span class="badge text-bg-light">{{opponent_status}}</span></p>
     </div>
-    <br/>
-    <div>
-        <form action="{{ get_game_status_page_url }}" method="post">
-            <input type="submit" value="Ready"/>
+    <div id="ships_and_field_container_row" class="row" style="background: rosybrown">
+        <div class="row">
+            <div id="ships_list" class="col-xs-12 col-md-6 col-lg-3 align-text-top">
+                <p>Your Ships:</p>
+                <div id="ships_list_dropdowns" class="list-group">
+                    {% for ship in ships_list %}
+                    {% if ship.ship_id == active_ship_id %}
+                    {% set active_color = "active" %}
+                    {% else %}
+                    {% set active_color = "" %}
+                    {% endif %}
+
+                    {% if ship.direction == "VERTICAL" %}
+                    {% set ship_direction_img = "bi bi bi-arrow-down" %}
+                    {% else %}
+                    {% set ship_direction_img = "bi bi bi-arrow-right" %}
+                    {% endif %}
+                    <div class="dropdown">
+                        <button id="ship_dropdown_button_{{loop.index0}}"
+                                class="list-group-item list-group-item-action {{ active_color }} dropdown-toggle text-sm-start"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            {% for i in range(ship.ship_size) %}
+                            <i class="bi bi-check-square-fill"></i>
+                            {% endfor %}
+                            <i class="{{ship_direction_img}}">{{ship.direction}}</i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <button form="form_ship_id_{{loop.index0}}_horizontal" class="dropdown-item"><i
+                                        class="bi bi bi-arrow-right">Horizontal</i></button>
+                            </li>
+                            <li>
+                                <button form="form_ship_id_{{loop.index0}}_vertical" class="dropdown-item"><i
+                                        class="bi bi bi-arrow-down">Vertical</i></button>
+                            </li>
+                        </ul>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div id="board_cells_container" class="col-xs-12 col-md-6 col-lg-3 align-text-top">
+                <div id="board_cells" class="grid_div">
+                    {% for row in field %}
+                    {% set row_index = loop.index0 %}
+                    {% for cell in row %}
+                    {% if cell.has_ship %}
+                    {% set btn_style = "btn-success" %}
+                    {% else %}
+                    {% set btn_style = "btn-outline-primary" %}
+                    {% endif %}
+
+                    {% if cell.is_not_available or (not cell.has_ship and ships_list|length == 0) %}
+                    {% set cell_is_disabled = "disabled" %}
+                    {% set btn_style = "bg-primary p-2 bg-opacity-50" %}
+                    {% else %}
+                    {% set cell_is_disabled = "" %}
+                    {% endif %}
+                    <button id="cell_button_{{row_index}}_{{loop.index0}}"
+                            form="form_cell_ship_{{row_index}}_{{loop.index0}}"
+                            class="border border-dark btn btn-sm btn-square-sm {{ btn_style }} ratio ratio-1x1"
+                            {{ cell_is_disabled }}>
+                    </button>
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="ready_button_container" class="row" style="background: yellow">
+        {% if ships_list|length == 0 %}
+        {% set is_disabled="" %}
+        {% set ready_style="btn btn-success" %}
+        {% else %}
+        {% set is_disabled="disabled" %}
+        {% set ready_style="btn btn-secondary" %}
+        {% endif %}
+        <form action="{{ url_post_start }}" method="post">
+            <button type="submit" class="{{ready_style}}" {{ is_disabled }}>Ready</button>
         </form>
     </div>
 </div>

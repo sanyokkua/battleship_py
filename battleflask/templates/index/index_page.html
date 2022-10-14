@@ -6,16 +6,15 @@ Battleships - The Game
 
 {% block body %}
 {{ super() }}
-
 <div>
     <form action="{{ url_get_new_game_view }}">
         <div>
-            <input type="submit" value="New Game"/>
+            <input type="submit" value="New Game" class="btn btn-primary"/>
         </div>
     </form>
     <form action="{{ url_get_join_game_view }}">
         <div>
-            <input type="submit" value="Join the Game"/>
+            <input type="submit" value="Join the Game" class="btn btn-secondary"/>
         </div>
     </form>
 </div>

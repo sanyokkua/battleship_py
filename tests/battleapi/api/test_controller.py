@@ -416,6 +416,8 @@ class TestControllerApi:
         player_2 = controller.persistence.db_client.load(session_id).players[
             created_player_2.player_id
         ]
+        player_1.is_ready = True
+        player_2.is_ready = True
 
         controller.persistence.load_session = MagicMock(
             return_value=dto.SessionStateDto(

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+Gameplay
+{% endblock page_title %}
+
+
+{% block javascript %}
+{{ super() }}
+<!--<body onload="refreshPageOnTime('{{ game_status_page_url }}', 5);">-->
+{% endblock javascript %}
+
+
+{% block body %}
+{{ super() }}
+<div>
+    <div>
+        <div>
+            <p>
+            <h2>Turn of {{ active_player_name }}</h2>
+            </p>
+        </div>
+        <br/>
+        <div>
+            <h1>Your Field {{ current_player_name }}</h1>
+            <table>
+                {% for row in player_field %}
+                {% set row_index = loop.index0 %}
+                <tr>
+                    {% for cell in row %}
+                    <td>
+                        {% if cell.has_ship and cell.has_shot %}
+                        {% set button_value = "X" %}
+                        {% elif cell.has_ship %}
+                        {% set button_value = "#" %}
+                        {% elif cell.has_shot %}
+                        {% set button_value = "*" %}
+                        {% else %}
+                        {% set button_value = "_" %}
+                        {% endif %}
+                        <button disabled>{{ button_value }}</button>
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+            <div>
+                <p>Number of cells left: {{ number_of_cells_self }}</p>
+            </div>
+        </div>
+        <br/>
+        <div>
+            <h1>Opponent Field {{ opponent_name }}</h1>
+            <table>
+                {% for row in opponent_field %}
+                {% set row_index = loop.index0 %}
+                <tr>
+                    {% for cell in row %}
+                    <td>
+                        {% if cell.has_ship and cell.has_shot %}
+                        {% set button_value = "X" %}
+                        {% elif cell.has_shot %}
+                        {% set button_value = "*" %}
+                        {% else %}
+                        {% set button_value = "_" %}
+                        {% endif %}
+
+
+                        {% if not is_opponent_ready or active_player_name != current_player_name or cell.has_shot %}
+                        {% set is_disabled = "disabled" %}
+                        {% else %}
+                        {% set is_disabled = "" %}
+                        {% endif %}
+
+                        <form action="{{ url_post_shot }}" id="form_cell_ship_{{row_index}}_{{loop.index0}}"
+                              method="post">
+                            <input id="ship_coordinate_row" name="ship_coordinate_row" type="hidden"
+                                   value="{{ cell.row }}"/>
+                            <input id="ship_coordinate_col" name="ship_coordinate_col" type="hidden"
+                                   value="{{ cell.col }}"/>
+                            <input {{ is_disabled }} type="submit" value="{{ button_value }}"/>
+                        </form>
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+            <div>
+                <p>Number of cells left: {{number_of_cells_opponent}}</p>
+            </div>
+        </div>
+        <br/>
+        <div>
+            <form action="{{ url_get_update }}" method="get">
+                <input type="submit" value="Update">
+            </form>
+        </div>
+    </div>
+    <br/>
+</div>
+
+{% endblock body %}

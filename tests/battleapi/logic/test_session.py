@@ -246,6 +246,8 @@ class TestGameSession:
             session.add_ship("test_player_id_2", coordinate, pl_2_ships.pop())
         winner = session.get_winner()
         assert winner is None
+        for player in session.players.values():
+            player.is_ready = True
         for row in range(5):
             for col in range(10):
                 session.make_shot("test_player_id_2", (row, col))

@@ -27,6 +27,15 @@ def validate_is_not_empty_string(
         )
 
 
+def validate_is_session_in_cookies_the_same(
+    session_id: str, cookies_session_id: str
+) -> None:
+    if session_id != cookies_session_id:
+        raise ex.IsNotTheSameSessionIdException(
+            f"Session IDs are different. id1: {session_id}, id2: {cookies_session_id}"
+        )
+
+
 def validate_is_correct_coordinate(
     value: int | None, var_name: str | None = None
 ) -> None:

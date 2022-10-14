@@ -86,6 +86,7 @@ class GameControllerApi(abstract.GameController):
         log.debug("SessionId: %s, Player: %s", session_id, player)
         self._save_game_session(game_session, session_id)
         log.info("Player is created")
+        self._save_game_session(game_session, session_id)
         return dto.PlayerDto(
             player_name=player.player_name,
             player_id=player.player_id,
@@ -370,6 +371,7 @@ class GameControllerApi(abstract.GameController):
         ship: models.Ship = ships[ship_id]
         ship.direction = models.Direction[ship_direction]
         session.add_ship(player_id, coordinate, ship)
+        self._save_game_session(session, session_id)
 
     def remove_ship_from_field(
         self, session_id: str, player_id: str, coordinate: models.Coordinate
@@ -390,6 +392,7 @@ class GameControllerApi(abstract.GameController):
         session: game.Game = self._load_game_session(session_id)
         removed = session.remove_ship(player_id, coordinate)
         log.debug("Ships is removed: %s", removed)
+        self._save_game_session(session, session_id)
 
     def start_game(self, session_id: str, player_id: str) -> None:
         """Start game.
@@ -405,6 +408,7 @@ class GameControllerApi(abstract.GameController):
         session: game.Game = self._load_game_session(session_id)
         readiness = session.make_player_ready(player_id)
         log.debug("Player is ready: %s", readiness)
+        self._save_game_session(session, session_id)
 
     def make_shot(
         self, session_id: str, player_id: str, coordinate: models.Coordinate
@@ -434,6 +438,7 @@ class GameControllerApi(abstract.GameController):
             is_finished,
             session.active_player_id,
         )
+        self._save_game_session(session, session_id)
         return dto.ShotResultDto(
             is_finished=is_finished, next_player=session.active_player_id
         )

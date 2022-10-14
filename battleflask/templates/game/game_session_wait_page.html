@@ -6,36 +6,62 @@ Wait for other player
 
 {% block javascript %}
 {{ super() }}
-<!--<body onload="refreshPageOnTime('{{ url_get_update }}');">-->
+<body onload="refreshPageOnTime('{{ url_get_update }}');"></body>
 {% endblock javascript %}
 
 {% block body %}
 {{ super() }}
-
-<div>
-    <div>
-        <p>
-        <h3> Share with other players Game Session ID</h3>
-        </p>
+<div id="body_container">
+    <div id="hello_container">
+        <h3>Hello <span style="color:blue;">{{ player_name }}</span>!</h3>
     </div>
-    <div>
-        <h1><span>{{ game_session_id }}</span></h1>
-    </div>
-    <div>
-        <p>Player who created session is {{ player_name }}</p>
+    <div id="game_session_id_share_container">
+        <h4>Share with other player Game Session ID</h4>
+        <div id="sharing_container">
+            <div id="game_session_id_container"
+                 class="alert alert-success"
+                 role="alert">
+                {{ game_session_id }}
+            </div>
+            <button id="session_id_copy_button"
+                    class="btn btn-success"
+                    onclick='copyToClipboard("{{ game_session_id }}")'>
+                Copy
+            </button>
+        </div>
     </div>
     <br/>
-    <div>
-        <p>Opponent name {{ opponent_name }}</p>
+    <br/>
+    <div id="wait_message_container">
+        {% if not opponent_name or opponent_name|length == 0 %}
+        <div>
+            <p>Waiting for your friend (opponent)...</p>
+            <div id="wait_spinner_container"
+                 class="spinner-border text-primary"
+                 role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        {% endif %}
     </div>
-    {% if opponent_name|length %}
-    <form action="{{ url_get_prepare }}" method="get">
-        <input type="submit" value="Next"/>
-    </form>
-    {% else %}
-    <form action="{{ url_get_update }}" method="get">
-        <input type="submit" value="Update"/>
-    </form>
-    {% endif %}
+    <div id="ready_update_button_container">
+        {% if opponent_name|length %}
+        <form action="{{ url_get_prepare }}" method="get">
+            <button id="next_button"
+                    class="btn btn-primary"
+                    type="submit">
+                Next
+            </button>
+        </form>
+        {% else %}
+        <form action="{{ url_get_update }}" method="get">
+            <button id="update_button"
+                    class="btn btn-primary"
+                    type="submit">
+                Update
+            </button>
+        </form>
+        {% endif %}
+    </div>
 </div>
 {% endblock body %}

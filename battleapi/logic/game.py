@@ -162,6 +162,9 @@ class Game:
         if not self.is_game_finished():
             return None
         for player in self._players.values():
+            if not player.is_ready:
+                return None
+        for player in self._players.values():
             alive_ships: int = player.board.get_amount_of_alive_ships()
             if alive_ships != 0:
                 return player

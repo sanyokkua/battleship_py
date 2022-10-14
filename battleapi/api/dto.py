@@ -18,6 +18,7 @@ class CellDto:
     has_shot: bool = False
     row: int = 0
     col: int = 0
+    is_not_available: bool = False
 
 
 @dataclasses.dataclass

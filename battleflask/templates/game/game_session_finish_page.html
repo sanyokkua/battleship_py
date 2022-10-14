@@ -6,7 +6,6 @@ Game is finished
 
 {% block body %}
 {{ super() }}
-
 <div>
 
     <div>
@@ -14,12 +13,12 @@ Game is finished
     </div>
     <br/>
     <div>
-        <h2>Player {{ winner_name }} has win this game </h2>
+        <h2>Player {{ winner_player_name }} has win this game </h2>
     </div>
     <br/>
     <div>
         <p>
-            <a href="{{ index_page_url }}">Return to the main page</a>
+            <a href="{{ url_get_index }}">Return to the main page</a>
         </p>
     </div>
 </div>

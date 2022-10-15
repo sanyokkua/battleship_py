@@ -14,7 +14,7 @@ URL_POST_JOIN = "_post_join_redirect_to_prepare_page"
 
 URL_GET_ID_PREPARE = "_get_session_prepare_page"
 URL_GET_ID_WAIT = "_get_session_wait_page"
-URL_GET_ID_PREPARE_OPPONENT = "_get_session_prepare_opponent"
+
 URL_GET_ID_GAMEPLAY = "_get_session_gameplay_page"
 URL_GET_ID_FINISH = "_get_session_finish_page"
 
@@ -148,7 +148,6 @@ def render_prepare_page(
     url_post_addship: str = gen_url_prepare(URL_POST_ID_PREPARE_ADD_SHIP, session_id)
     url_post_chose_ship: str = gen_url_prepare(URL_POST_ID_PREPARE_CHOSE, session_id)
     url_post_delship: str = gen_url_prepare(URL_POST_ID_PREPARE_DELSHIP, session_id)
-    url_get_opponent: str = gen_url_prepare(URL_GET_ID_PREPARE_OPPONENT, session_id)
 
     log.debug("url_get_new_game_view: %s", url_get_new_game_view)
     log.debug("url_get_join_game_view: %s", url_get_join_game_view)
@@ -156,7 +155,6 @@ def render_prepare_page(
     log.debug("url_post_addship: %s", url_post_addship)
     log.debug("url_post_chose_ship: %s", url_post_chose_ship)
     log.debug("url_post_delship: %s", url_post_delship)
-    log.debug("url_get_opponent: %s", url_get_opponent)
     log.debug("url_last_page_url: %s", url_last_page_url)
     log.debug("last_page_name: %s", last_page_name)
 
@@ -168,7 +166,6 @@ def render_prepare_page(
         url_post_addship=url_post_addship,
         url_post_chose_ship=url_post_chose_ship,
         url_post_delship=url_post_delship,
-        url_get_opponent=url_get_opponent,
         player_name=player_name,
         opponent_name=opponent_name,
         opponent_status=opponent_status,
@@ -300,9 +297,7 @@ def gen_redirect(
         "blue_print: %s, method: %s, session: %s", blue_print, method_name, session_id
     )
     url = gen_url(blue_print, method_name, session_id)
-    response: werkzeug.Response = flask.redirect(
-        url
-    )
+    response: werkzeug.Response = flask.redirect(url)
     response.set_cookie(const.COOKIE_LAST_URL, url)
     response.set_cookie(const.COOKIE_LAST_PAGE, page_name)
     log.debug("response: %s", response)
@@ -310,17 +305,24 @@ def gen_redirect(
 
 
 def redirect_to_id_prepare_page(session_id: str) -> werkzeug.Response:
-    return gen_redirect(const.CONTROLLER_PREPARATION, URL_GET_ID_PREPARE, session_id,
-                        "Prepare")
+    return gen_redirect(
+        const.CONTROLLER_PREPARATION, URL_GET_ID_PREPARE, session_id, "Prepare"
+    )
 
 
 def redirect_to_id_wait_page(session_id: str) -> werkzeug.Response:
-    return gen_redirect(const.CONTROLLER_GAME_COMMON, URL_GET_ID_WAIT, session_id, "Wait")
+    return gen_redirect(
+        const.CONTROLLER_GAME_COMMON, URL_GET_ID_WAIT, session_id, "Wait"
+    )
 
 
 def redirect_to_id_finish_page(session_id: str) -> werkzeug.Response:
-    return gen_redirect(const.CONTROLLER_GAME_COMMON, URL_GET_ID_FINISH, session_id, "Results")
+    return gen_redirect(
+        const.CONTROLLER_GAME_COMMON, URL_GET_ID_FINISH, session_id, "Results"
+    )
 
 
 def redirect_to_id_gameplay_page(session_id: str) -> werkzeug.Response:
-    return gen_redirect(const.CONTROLLER_GAMEPLAY, URL_GET_ID_GAMEPLAY, session_id, "Game Play")
+    return gen_redirect(
+        const.CONTROLLER_GAMEPLAY, URL_GET_ID_GAMEPLAY, session_id, "Game Play"
+    )

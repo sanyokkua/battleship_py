@@ -19,8 +19,7 @@ def _get_index_page() -> str:
     url_last: str = request_utils.get_cookies_string(const.COOKIE_LAST_URL)
     page_name: str = request_utils.get_cookies_string(const.COOKIE_LAST_PAGE)
     return render_utils.render_index_page(
-        url_last_page_url=url_last,
-        last_page_name=page_name
+        url_last_page_url=url_last, last_page_name=page_name
     )
 
 
@@ -29,8 +28,7 @@ def _get_new_game_page() -> str:
     url_last: str = request_utils.get_cookies_string(const.COOKIE_LAST_URL)
     page_name: str = request_utils.get_cookies_string(const.COOKIE_LAST_PAGE)
     return render_utils.render_new_game_page(
-        url_last_page_url=url_last,
-        last_page_name=page_name
+        url_last_page_url=url_last, last_page_name=page_name
     )
 
 
@@ -39,6 +37,5 @@ def _get_join_game_page() -> str:
     url_last: str = request_utils.get_cookies_string(const.COOKIE_LAST_URL)
     page_name: str = request_utils.get_cookies_string(const.COOKIE_LAST_PAGE)
     return render_utils.render_join_game_page(
-        url_last_page_url=url_last,
-        last_page_name=page_name
+        url_last_page_url=url_last, last_page_name=page_name
     )

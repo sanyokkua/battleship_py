@@ -1,12 +1,15 @@
-from db.in_memory_db_client import InMemoryDbClient
+import db.in_memory_db_client as db_client
 
-from battleapi.api.controller import GameControllerApi
-from battleapi.api.persistence import GamePersistenceApi
-from battleapi.utils.id_generator import Uuid4IdGenerator
+import battleapi.abstract as abstract
+import battleapi.api.controller as controller
+import battleapi.api.persistence as persistence
+import battleapi.utils.id_generator as id_generator
 
-IN_MEMORY_DB_CLIENT = InMemoryDbClient()
-ID_GENERATOR = Uuid4IdGenerator()
-PERSISTENCE_API = GamePersistenceApi(IN_MEMORY_DB_CLIENT)
-GAME_API: GameControllerApi = GameControllerApi(
+IN_MEMORY_DB_CLIENT: abstract.DbClient = db_client.InMemoryDbClient()
+ID_GENERATOR: abstract.IdGenerator = id_generator.Uuid4IdGenerator()
+PERSISTENCE_API: abstract.GamePersistence = persistence.GamePersistenceApi(
+    IN_MEMORY_DB_CLIENT
+)
+GAME_API: abstract.GameController = controller.GameControllerApi(
     persistence=PERSISTENCE_API, id_generator=ID_GENERATOR
 )

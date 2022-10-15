@@ -87,7 +87,7 @@ def _get_session_prepare_page(session_id: str) -> str:
         active_ship=render_ship_id,
         active_ship_direction=render_ship_direction,
         url_last_page_url=url_last,
-        last_page_name=page_name
+        last_page_name=page_name,
     )
 
 
@@ -105,20 +105,6 @@ def _get_ship_direction(cookie_ship_direction: str, ships: list[dto.ShipDto]) ->
         cookie_ship_direction if len(cookie_ship_direction) > 0 else ship_direction
     )
     return render_ship_direction
-
-
-@PREPARATION_CONTROLLER.route(
-    "/<string:session_id>/prepare/opponent", methods=[const.METHOD_GET]
-)
-def _get_session_prepare_opponent(session_id: str) -> str:
-    current_player_id: str = request_utils.get_cookies_string(const.COOKIE_PLAYER_ID)
-    log.debug("value: %s", current_player_id)
-
-    validation.validate_is_not_empty_string(current_player_id, "current_player_id")
-
-    opponent: dto.PlayerDto = ctx.GAME_API.get_opponent(session_id, current_player_id)
-    log.debug("Opponent: %s", opponent)
-    return f"{opponent.player_name} is Ready: {opponent.is_ready}"
 
 
 @PREPARATION_CONTROLLER.route(
@@ -173,7 +159,9 @@ def _post_session_prepare_addship_redirect_to_prepare_page(
     return response
 
 
-def _refresh_cookies_for_prepare_page(cookies_player_id, response, session_id):
+def _refresh_cookies_for_prepare_page(
+    cookies_player_id: str, response: werkzeug.Response, session_id: str
+):
     player: dto.PlayerDto = ctx.GAME_API.get_player_by_id(session_id, cookies_player_id)
     ships_list: list[dto.ShipDto] = ctx.GAME_API.get_prepare_ships_list(
         session_id, cookies_player_id

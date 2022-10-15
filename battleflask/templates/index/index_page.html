@@ -11,7 +11,7 @@ Battleships - The Game
         <div class="col align-self-center">
             <form action="{{ url_get_new_game_view }}">
                 <div>
-                    <input type="submit" value="New Game" class="btn btn-primary"/>
+                    <input class="btn btn-primary" type="submit" value="New Game"/>
                 </div>
             </form>
         </div>
@@ -20,11 +20,10 @@ Battleships - The Game
         <div class="col align-self-center">
             <form action="{{ url_get_join_game_view }}">
                 <div>
-                    <input type="submit" value="Join the Game" class="btn btn-secondary"/>
+                    <input class="btn btn-secondary" type="submit" value="Join the Game"/>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
 {% endblock body %}

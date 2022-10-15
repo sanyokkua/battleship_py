@@ -20,11 +20,11 @@ Add your ships to the board
 {% set ship_direction_vertical="⇩" %}
 <div id="hidden_ship_forms">
     {% for ship in ships_list %}
-    <form id="form_ship_id_{{loop.index0}}_vertical" action="{{ url_post_chose_ship }}" method="post">
+    <form action="{{ url_post_chose_ship }}" id="form_ship_id_{{loop.index0}}_vertical" method="post">
         <input id="active_ship_id_v" name="active_ship_id" type="hidden" value="{{ ship.ship_id }}"/>
         <input id="ship_vertical" name="ship_direction" type="hidden" value="VERTICAL">
     </form>
-    <form id="form_ship_id_{{loop.index0}}_horizontal" action="{{ url_post_chose_ship }}" method="post">
+    <form action="{{ url_post_chose_ship }}" id="form_ship_id_{{loop.index0}}_horizontal" method="post">
         <input id="active_ship_id_h" name="active_ship_id" type="hidden" value="{{ ship.ship_id }}"/>
         <input id="ship_horizontal" name="ship_direction" type="hidden" value="HORIZONTAL">
     </form>
@@ -39,7 +39,7 @@ Add your ships to the board
     {% else %}
     {% set cell_url = url_post_addship %}
     {% endif %}
-    <form id="form_cell_ship_{{row_index}}_{{loop.index0}}" action="{{ cell_url }}" method="post">
+    <form action="{{ cell_url }}" id="form_cell_ship_{{row_index}}_{{loop.index0}}" method="post">
         <input id="ship_coordinate_row_{{row_index}}_{{loop.index0}}"
                name="ship_coordinate_row"
                type="hidden"
@@ -56,7 +56,7 @@ Add your ships to the board
     {% endfor %}
     {% endfor %}
 </div>
-<div id="opponent_status_container" class="container-fluid">
+<div class="container-fluid" id="opponent_status_container">
     {% if opponent_status %}
     {% set badge_style="text-bg-success" %}
     {% set status_text="Ready" %}
@@ -64,14 +64,14 @@ Add your ships to the board
     {% set badge_style="text-bg-warning" %}
     {% set status_text="In Progress..." %}
     {% endif %}
-    <div id="opponent_status_container_row" class="row">
+    <div class="row" id="opponent_status_container_row">
         <p><span class="text-primary">{{opponent_name}}</span> Status: <span class="badge {{badge_style}}">{{status_text}}</span>
         </p>
     </div>
 </div>
-<div id="body_container" class="container">
+<div class="container" id="body_container">
     <div class="row align-items-center justify-content-center">
-        <div id="ships_list" class="col-md-4 col-sm-6">
+        <div class="col-md-4 col-sm-6" id="ships_list">
             <div class="container-fluid text-center">
                 <div class="row">
                     <div class="col col-sm-3">
@@ -95,8 +95,8 @@ Add your ships to the board
                         {% set ship_string = "ERROR" %}
                         {% endif %}
                         {% if ship.ship_size == 1 %}
-                        <button form="form_ship_id_{{loop.index0}}_horizontal"
-                                class="{{is_selected_button}}">
+                        <button class="{{is_selected_button}}"
+                                form="form_ship_id_{{loop.index0}}_horizontal">
                             <b>{{ship_string}}</b>
                         </button>
                         {% else %}
@@ -108,18 +108,18 @@ Add your ships to the board
                             {% set ship_direction_img = ship_direction_vertical %}
                             {% set text_color = "text-success" %}
                             {% endif %}
-                            <button type="button" class="{{ is_selected_button }} dropdown-toggle"
+                            <button aria-expanded="false" class="{{ is_selected_button }} dropdown-toggle"
                                     data-bs-toggle="dropdown"
-                                    aria-expanded="false">
+                                    type="button">
                                 <b>{{ship_string}} {{ship_direction_img}}</b>
                             </button>
                             <ul class="dropdown-menu">
-                                <button form="form_ship_id_{{loop.index0}}_horizontal"
-                                        class="dropdown-item">
+                                <button class="dropdown-item"
+                                        form="form_ship_id_{{loop.index0}}_horizontal">
                                     {{ship_direction_horizontal}} Horizontal
                                 </button>
-                                <button form="form_ship_id_{{loop.index0}}_vertical"
-                                        class="dropdown-item" {{ is_hidden_direction_button }}>
+                                <button class="dropdown-item"
+                                        form="form_ship_id_{{loop.index0}}_vertical" {{ is_hidden_direction_button }}>
                                     {{ship_direction_vertical}} Vertical
                                 </button>
                             </ul>
@@ -127,65 +127,11 @@ Add your ships to the board
                         {% endif %}
                         {% endfor %}
                     </div>
-
                 </div>
             </div>
-
-            <!--            <div class="btn-group-vertical" role="group" aria-label="Vertical button group">-->
-            <!--                {% for ship in ships_list %}-->
-            <!--                {% if ship.ship_id == active_ship_id %}-->
-            <!--                {% set is_selected_button = "btn btn-success" %}-->
-            <!--                {% else %}-->
-            <!--                {% set is_selected_button = "btn btn-outline-primary" %}-->
-            <!--                {% endif %}-->
-            <!--                {% if ship.ship_size == 1 %}-->
-            <!--                {% set ship_string = ship_size_1 %}-->
-            <!--                {% elif ship.ship_size == 2 %}-->
-            <!--                {% set ship_string = ship_size_2 %}-->
-            <!--                {% elif ship.ship_size == 3 %}-->
-            <!--                {% set ship_string = ship_size_3 %}-->
-            <!--                {% elif ship.ship_size == 4 %}-->
-            <!--                {% set ship_string = ship_size_4 %}-->
-            <!--                {% elif ship.ship_size == 5 %}-->
-            <!--                {% set ship_string = ship_size_5 %}-->
-            <!--                {% else %}-->
-            <!--                {% set ship_string = "ERROR" %}-->
-            <!--                {% endif %}-->
-            <!--                {% if ship.ship_size == 1 %}-->
-            <!--                <button form="form_ship_id_{{loop.index0}}_horizontal"-->
-            <!--                        class="{{is_selected_button}}">-->
-            <!--                    <b>{{ship_string}} - Chose</b>-->
-            <!--                </button>-->
-            <!--                {% else %}-->
-            <!--                <div class="btn-group" role="group">-->
-            <!--                    {% if ship.direction == "HORIZONTAL" %}-->
-            <!--                    {% set ship_direction_img = ship_direction_horizontal %}-->
-            <!--                    {% set text_color = "text-primary" %}-->
-            <!--                    {% else %}-->
-            <!--                    {% set ship_direction_img = ship_direction_vertical %}-->
-            <!--                    {% set text_color = "text-success" %}-->
-            <!--                    {% endif %}-->
-            <!--                    <button type="button" class="{{ is_selected_button }} dropdown-toggle" data-bs-toggle="dropdown"-->
-            <!--                            aria-expanded="false">-->
-            <!--                        <b>{{ship_string}} {{ship_direction_img}}</b>-->
-            <!--                    </button>-->
-            <!--                    <ul class="dropdown-menu">-->
-            <!--                        <button form="form_ship_id_{{loop.index0}}_horizontal"-->
-            <!--                                class="dropdown-item">-->
-            <!--                            {{ship_direction_horizontal}}-->
-            <!--                        </button>-->
-            <!--                        <button form="form_ship_id_{{loop.index0}}_vertical"-->
-            <!--                                class="dropdown-item" {{ is_hidden_direction_button }}>-->
-            <!--                            {{ship_direction_vertical}}-->
-            <!--                        </button>-->
-            <!--                    </ul>-->
-            <!--                </div>-->
-            <!--                {% endif %}-->
-            <!--                {% endfor %}-->
-            <!--            </div>-->
         </div>
-        <div id="board_cells_container" class="col-md-4 col-sm-6">
-            <div id="board_cells" class="grid_div">
+        <div class="col-md-4 col-sm-6" id="board_cells_container">
+            <div class="grid_div" id="board_cells">
                 {% for row in field %}
                 {% set row_index = loop.index0 %}
                 {% for cell in row %}
@@ -200,17 +146,17 @@ Add your ships to the board
                 {% else %}
                 {% set cell_is_disabled = "" %}
                 {% endif %}
-                <button id="cell_button_{{row_index}}_{{loop.index0}}"
-                        form="form_cell_ship_{{row_index}}_{{loop.index0}}"
+                <button cell_is_disabled
                         class="col ratio ratio-1x1 border border-dark btn btn-sm btn-square-sm {{ btn_style }}"
-                        {{ cell_is_disabled }}></button>
+                        form="form_cell_ship_{{row_index}}_{{loop.index0}}"
+                        id="cell_button_{{row_index}}_{{loop.index0}}" {{ cell_is_disabled }}></button>
                 {% endfor %}
                 {% endfor %}
             </div>
         </div>
     </div>
 </div>
-<div id="ready_button_container" class="row">
+<div class="row" id="ready_button_container">
     {% if ships_list|length == 0 %}
     {% set is_disabled="" %}
     {% set ready_style="btn btn-success" %}
@@ -219,7 +165,7 @@ Add your ships to the board
     {% set ready_style="btn btn-secondary" %}
     {% endif %}
     <form action="{{ url_post_start }}" method="post">
-        <button type="submit" class="{{ready_style}}" {{ is_disabled }}>Ready</button>
+        <button class="{{ready_style}}" is_disabled type="submit" {{ is_disabled }}>Ready</button>
     </form>
 </div>
 {% endblock body %}

@@ -7,8 +7,8 @@ import battleflask.app.context as ctx
 import battleflask.app.controllers.constants as const
 import battleflask.app.controllers.render_utils as render_utils
 import battleflask.app.controllers.request_utils as request_utils
-import battleflask.app.validation_utils as validation
 import battleflask.app.exceptions as ex
+import battleflask.app.validation_utils as validation
 
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ def _get_session_wait_page(session_id: str) -> str:
         player_name=player.player_name,
         opponent_name=opponent_name,
         url_last_page_url=url_last,
-        last_page_name=page_name
+        last_page_name=page_name,
     )
 
 

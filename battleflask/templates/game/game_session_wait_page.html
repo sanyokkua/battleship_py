@@ -12,51 +12,51 @@ Wait for other player
 {% block body %}
 {{ super() }}
 <div id="body_container">
-    <div id="hello_container" class="row align-items-center justify-content-center">
+    <div class="row align-items-center justify-content-center" id="hello_container">
         <h3>Hello <span style="color:blue;">{{ player_name }}</span>!</h3>
     </div>
-    <div id="game_session_id_share_container" class="row align-items-center justify-content-center">
+    <div class="row align-items-center justify-content-center" id="game_session_id_share_container">
         <h4>Share with other player Game Session ID</h4>
         <div id="sharing_container">
-            <div id="game_session_id_container"
-                 class="alert alert-success"
+            <div class="alert alert-success"
+                 id="game_session_id_container"
                  role="alert">
                 {{ game_session_id }}
             </div>
-            <button id="session_id_copy_button"
-                    class="btn btn-success"
+            <button class="btn btn-success"
+                    id="session_id_copy_button"
                     onclick='copyToClipboard("{{ game_session_id }}")'>
                 Copy
             </button>
         </div>
     </div>
     <div class="row align-items-center justify-content-center"><br/></div>
-    <div id="wait_message_container" class="row align-items-center justify-content-center">
+    <div class="row align-items-center justify-content-center" id="wait_message_container">
         {% if not opponent_name or opponent_name|length == 0 %}
         <div>
             <p>Waiting for your friend (opponent)...</p>
-            <div id="wait_spinner_container"
-                 class="spinner-border text-primary"
+            <div class="spinner-border text-primary"
+                 id="wait_spinner_container"
                  role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
         {% endif %}
     </div>
-    <div id="ready_update_button_container" class="row align-items-center justify-content-center">
+    <div class="row align-items-center justify-content-center" id="ready_update_button_container">
         {% if opponent_name|length %}
         <h3><b>{{opponent_name}}</b> has joined!</h3>
         <form action="{{ url_get_prepare }}" method="get">
-            <button id="next_button"
-                    class="btn btn-primary"
+            <button class="btn btn-primary"
+                    id="next_button"
                     type="submit">
                 Start
             </button>
         </form>
         {% else %}
         <form action="{{ url_get_update }}" method="get">
-            <button id="update_button"
-                    class="btn btn-primary"
+            <button class="btn btn-primary"
+                    id="update_button"
                     type="submit">
                 Update
             </button>

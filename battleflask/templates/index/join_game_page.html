@@ -9,12 +9,13 @@ Join to the game
 <div class="row justify-content-center">
     <form action="{{ url_post_join_game_session }}" method="post">
         <div class="mb-3">
-            <label for="player_name" class="form-label">Player Name</label>
-            <input type="text" class="form-control" id="player_name" name="player_name" placeholder="your name">
+            <label class="form-label" for="player_name">Player Name</label>
+            <input class="form-control" id="player_name" name="player_name" placeholder="your name" type="text">
         </div>
         <div class="mb-3">
-            <label for="session_id"  class="form-label">Shared session ID</label>
-            <input type="text" class="form-control" id="session_id" name="session_id" placeholder="f7adbf21-dec9-4a20-9cde-759a9bde8b44"/>
+            <label class="form-label" for="session_id">Shared session ID</label>
+            <input class="form-control" id="session_id" name="session_id" placeholder="f7adbf21-dec9-4a20-9cde-759a9bde8b44"
+                   type="text"/>
         </div>
         <input class="btn btn-primary" type="submit" value="Join"/>
     </form>

@@ -21,6 +21,7 @@ def get_form_string(key: str, default_value: str = "") -> str:
         str: _description_
     """
     log.debug("key: %s, default: %s", key, default_value)
+    # noinspection PyBroadException
     try:
         value: str = flask.request.form[key]
         if value and len(value.strip()) > 0:
@@ -41,6 +42,7 @@ def get_form_int(key: str, default_value: int = -1) -> int:
         int: _description_
     """
     log.debug("key: %s, default: %d", key, default_value)
+    # noinspection PyBroadException
     try:
         value: str = flask.request.form[key]
         if value and len(value.strip()) > 0:
@@ -61,6 +63,7 @@ def get_cookies_string(key: str, default_value: str = "") -> str:
         str: _description_
     """
     log.debug("key: %s, default: %s", key, default_value)
+    # noinspection PyBroadException
     try:
         value: str = flask.request.cookies.get(key)
         if value and len(value.strip()) > 0:

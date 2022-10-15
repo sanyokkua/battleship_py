@@ -67,7 +67,7 @@ def _get_session_gameplay_page(session_id: str) -> str | werkzeug.Response:
         opponent_field=opponent_field,
         is_opponent_ready=is_opponent_ready,
         url_last_page_url=url_last,
-        last_page_name=page_name
+        last_page_name=page_name,
     )
 
 

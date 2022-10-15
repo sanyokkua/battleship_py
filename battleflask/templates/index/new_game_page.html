@@ -6,7 +6,7 @@ Start new game
 
 {% block body %}
 {{ super() }}
-<div>
+<div class="row justify-content-center">
     <form action="{{ url_post_start_game_session }}" method="post">
         <div class="mb-3">
             <label class="form-label" for="player_name">Player Name</label>

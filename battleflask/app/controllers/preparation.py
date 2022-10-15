@@ -32,6 +32,8 @@ def _get_session_prepare_page(session_id: str) -> str:
     cookie_ship_direction: str = request_utils.get_cookies_string(
         const.COOKIE_SHIP_DIRECTION
     )
+    url_last: str = request_utils.get_cookies_string(const.COOKIE_LAST_URL)
+    page_name: str = request_utils.get_cookies_string(const.COOKIE_LAST_PAGE)
 
     log.debug("value of cookie_player_id: %s", cookie_player_id)
     log.debug("value of cookie_session_id: %s", cookie_session_id)
@@ -84,6 +86,8 @@ def _get_session_prepare_page(session_id: str) -> str:
         field=field,
         active_ship=render_ship_id,
         active_ship_direction=render_ship_direction,
+        url_last_page_url=url_last,
+        last_page_name=page_name
     )
 
 

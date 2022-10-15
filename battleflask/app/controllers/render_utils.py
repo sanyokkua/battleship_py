@@ -27,20 +27,28 @@ URL_POST_ID_GAMEPLAY_SHOT = "_post_session_gameplay_shot_redirect_to_gameplay_pa
 log: logging.Logger = logging.getLogger(__name__)
 
 
-def render_index_page() -> str:
+def render_index_page(url_last_page_url: str = "", last_page_name: str = "") -> str:
     url_get_new_game_view: str = gen_url_index(URL_GET_NEW)
     url_get_join_game_view: str = gen_url_index(URL_GET_JOIN)
     log.debug("url_get_new_game_view: %s", url_get_new_game_view)
     log.debug("url_get_join_game_view: %s", url_get_join_game_view)
+    log.debug("url_last_page_url: %s", url_last_page_url)
+    log.debug("last_page_name: %s", last_page_name)
 
     return flask.render_template(
         "index/index_page.html",
         url_get_new_game_view=url_get_new_game_view,
         url_get_join_game_view=url_get_join_game_view,
+        url_last_page_url=url_last_page_url,
+        last_page_name=last_page_name,
     )
 
 
-def render_new_game_page(errors: list[str] | None = None) -> str:
+def render_new_game_page(
+    url_last_page_url: str = "",
+    last_page_name: str = "",
+    errors: list[str] | None = None,
+) -> str:
     url_get_new_game_view: str = gen_url_index(URL_GET_NEW)
     url_get_join_game_view: str = gen_url_index(URL_GET_JOIN)
     url_post_start_game_session: str = gen_url_players(URL_POST_START)
@@ -48,17 +56,25 @@ def render_new_game_page(errors: list[str] | None = None) -> str:
     log.debug("url_get_new_game_view: %s", url_get_new_game_view)
     log.debug("url_get_join_game_view: %s", url_get_join_game_view)
     log.debug("url_post_start_game_session: %s", url_post_start_game_session)
+    log.debug("url_last_page_url: %s", url_last_page_url)
+    log.debug("last_page_name: %s", last_page_name)
 
     return flask.render_template(
         "index/new_game_page.html",
         url_get_new_game_view=url_get_new_game_view,
         url_get_join_game_view=url_get_join_game_view,
         url_post_start_game_session=url_post_start_game_session,
+        url_last_page_url=url_last_page_url,
+        last_page_name=last_page_name,
         errors_list=errors,
     )
 
 
-def render_join_game_page(errors: list[str] | None = None) -> str:
+def render_join_game_page(
+    url_last_page_url: str = "",
+    last_page_name: str = "",
+    errors: list[str] | None = None,
+) -> str:
     url_get_new_game_view: str = gen_url_index(URL_GET_NEW)
     url_get_join_game_view: str = gen_url_index(URL_GET_JOIN)
     url_post_join_game_session: str = gen_url_players(URL_POST_JOIN)
@@ -66,17 +82,27 @@ def render_join_game_page(errors: list[str] | None = None) -> str:
     log.debug("url_get_new_game_view: %s", url_get_new_game_view)
     log.debug("url_get_join_game_view: %s", url_get_join_game_view)
     log.debug("url_post_join_game_session: %s", url_post_join_game_session)
+    log.debug("url_last_page_url: %s", url_last_page_url)
+    log.debug("last_page_name: %s", last_page_name)
 
     return flask.render_template(
         "index/join_game_page.html",
         url_get_new_game_view=url_get_new_game_view,
         url_get_join_game_view=url_get_join_game_view,
         url_post_join_game_session=url_post_join_game_session,
+        url_last_page_url=url_last_page_url,
+        last_page_name=last_page_name,
         errors_list=errors,
     )
 
 
-def render_wait_page(session_id: str, player_name: str, opponent_name: str) -> str:
+def render_wait_page(
+    session_id: str,
+    player_name: str,
+    opponent_name: str,
+    url_last_page_url: str = "",
+    last_page_name: str = "",
+) -> str:
     url_get_new_game_view: str = gen_url_index(URL_GET_NEW)
     url_get_join_game_view: str = gen_url_index(URL_GET_JOIN)
     url_get_update: str = gen_url_game(URL_GET_ID_WAIT, session_id)
@@ -86,6 +112,8 @@ def render_wait_page(session_id: str, player_name: str, opponent_name: str) -> s
     log.debug("url_get_join_game_view: %s", url_get_join_game_view)
     log.debug("url_get_update: %s", url_get_update)
     log.debug("url_get_prepare: %s", url_get_prepare)
+    log.debug("url_last_page_url: %s", url_last_page_url)
+    log.debug("last_page_name: %s", last_page_name)
 
     return flask.render_template(
         "game/game_session_wait_page.html",
@@ -96,6 +124,8 @@ def render_wait_page(session_id: str, player_name: str, opponent_name: str) -> s
         player_name=player_name,
         game_session_id=session_id,
         opponent_name=opponent_name,
+        url_last_page_url=url_last_page_url,
+        last_page_name=last_page_name,
     )
 
 
@@ -108,6 +138,8 @@ def render_prepare_page(
     field: list[list[dto.CellDto]],
     active_ship: str,
     active_ship_direction: str,
+    url_last_page_url: str = "",
+    last_page_name: str = "",
     errors: list[str] | None = None,
 ) -> str:
     url_get_new_game_view: str = gen_url_index(URL_GET_NEW)
@@ -125,6 +157,8 @@ def render_prepare_page(
     log.debug("url_post_chose_ship: %s", url_post_chose_ship)
     log.debug("url_post_delship: %s", url_post_delship)
     log.debug("url_get_opponent: %s", url_get_opponent)
+    log.debug("url_last_page_url: %s", url_last_page_url)
+    log.debug("last_page_name: %s", last_page_name)
 
     return flask.render_template(
         "game/game_session_prepare_page.html",
@@ -142,6 +176,8 @@ def render_prepare_page(
         field=field,
         active_ship_id=active_ship,
         active_ship_direction=active_ship_direction,
+        url_last_page_url=url_last_page_url,
+        last_page_name=last_page_name,
         errors_list=errors,
     )
 
@@ -156,6 +192,8 @@ def render_gameplay_page(
     player_field: list[list[dto.CellDto]],
     opponent_field: list[list[dto.CellDto]],
     is_opponent_ready: bool,
+    url_last_page_url: str = "",
+    last_page_name: str = "",
     errors: list[str] | None = None,
 ) -> str:
     url_get_new_game_view: str = gen_url_index(URL_GET_NEW)
@@ -167,6 +205,8 @@ def render_gameplay_page(
     log.debug("url_get_join_game_view: %s", url_get_join_game_view)
     log.debug("url_post_shot: %s", url_post_shot)
     log.debug("url_get_update: %s", url_get_update)
+    log.debug("url_last_page_url: %s", url_last_page_url)
+    log.debug("last_page_name: %s", last_page_name)
 
     return flask.render_template(
         "game/game_session_gameplay_page.html",
@@ -182,11 +222,22 @@ def render_gameplay_page(
         player_field=player_field,
         opponent_field=opponent_field,
         is_opponent_ready=is_opponent_ready,
+        url_last_page_url=url_last_page_url,
+        last_page_name=last_page_name,
         errors_list=errors,
     )
 
 
-def render_finish_page(session_id: str, winner_player_name: str) -> str:
+def render_finish_page(
+    session_id: str,
+    winner_player_name: str,
+    current_player_name: str,
+    opponent_name: str,
+    player_field: list[list[dto.CellDto]],
+    opponent_field: list[list[dto.CellDto]],
+    url_last_page_url: str = "",
+    last_page_name: str = "",
+) -> str:
     url_get_new_game_view: str = gen_url_index(URL_GET_NEW)
     url_get_join_game_view: str = gen_url_index(URL_GET_JOIN)
     url_get_index: str = gen_url_index(URL_GET_INDEX)
@@ -194,6 +245,8 @@ def render_finish_page(session_id: str, winner_player_name: str) -> str:
     log.debug("url_get_new_game_view: %s", url_get_new_game_view)
     log.debug("url_get_join_game_view: %s", url_get_join_game_view)
     log.debug("url_get_index: %s", url_get_index)
+    log.debug("url_last_page_url: %s", url_last_page_url)
+    log.debug("last_page_name: %s", last_page_name)
 
     return flask.render_template(
         "game/game_session_finish_page.html",
@@ -202,6 +255,12 @@ def render_finish_page(session_id: str, winner_player_name: str) -> str:
         url_get_index=url_get_index,
         session_id=session_id,
         winner_player_name=winner_player_name,
+        current_player_name=current_player_name,
+        opponent_name=opponent_name,
+        player_field=player_field,
+        opponent_field=opponent_field,
+        url_last_page_url=url_last_page_url,
+        last_page_name=last_page_name,
     )
 
 
@@ -235,29 +294,33 @@ def gen_url_gameplay(method: str, session: str = "") -> str:
 
 
 def gen_redirect(
-    blue_print: str, method_name: str, session_id: str
+    blue_print: str, method_name: str, session_id: str, page_name: str = ""
 ) -> werkzeug.Response:
     log.debug(
         "blue_print: %s, method: %s, session: %s", blue_print, method_name, session_id
     )
+    url = gen_url(blue_print, method_name, session_id)
     response: werkzeug.Response = flask.redirect(
-        gen_url(blue_print, method_name, session_id)
+        url
     )
+    response.set_cookie(const.COOKIE_LAST_URL, url)
+    response.set_cookie(const.COOKIE_LAST_PAGE, page_name)
     log.debug("response: %s", response)
     return response
 
 
 def redirect_to_id_prepare_page(session_id: str) -> werkzeug.Response:
-    return gen_redirect(const.CONTROLLER_PREPARATION, URL_GET_ID_PREPARE, session_id)
+    return gen_redirect(const.CONTROLLER_PREPARATION, URL_GET_ID_PREPARE, session_id,
+                        "Prepare")
 
 
 def redirect_to_id_wait_page(session_id: str) -> werkzeug.Response:
-    return gen_redirect(const.CONTROLLER_GAME_COMMON, URL_GET_ID_WAIT, session_id)
+    return gen_redirect(const.CONTROLLER_GAME_COMMON, URL_GET_ID_WAIT, session_id, "Wait")
 
 
 def redirect_to_id_finish_page(session_id: str) -> werkzeug.Response:
-    return gen_redirect(const.CONTROLLER_GAME_COMMON, URL_GET_ID_FINISH, session_id)
+    return gen_redirect(const.CONTROLLER_GAME_COMMON, URL_GET_ID_FINISH, session_id, "Results")
 
 
 def redirect_to_id_gameplay_page(session_id: str) -> werkzeug.Response:
-    return gen_redirect(const.CONTROLLER_GAMEPLAY, URL_GET_ID_GAMEPLAY, session_id)
+    return gen_redirect(const.CONTROLLER_GAMEPLAY, URL_GET_ID_GAMEPLAY, session_id, "Game Play")

@@ -12,10 +12,10 @@ Wait for other player
 {% block body %}
 {{ super() }}
 <div id="body_container">
-    <div id="hello_container">
+    <div id="hello_container" class="row align-items-center justify-content-center">
         <h3>Hello <span style="color:blue;">{{ player_name }}</span>!</h3>
     </div>
-    <div id="game_session_id_share_container">
+    <div id="game_session_id_share_container" class="row align-items-center justify-content-center">
         <h4>Share with other player Game Session ID</h4>
         <div id="sharing_container">
             <div id="game_session_id_container"
@@ -30,9 +30,8 @@ Wait for other player
             </button>
         </div>
     </div>
-    <br/>
-    <br/>
-    <div id="wait_message_container">
+    <div class="row align-items-center justify-content-center"><br/></div>
+    <div id="wait_message_container" class="row align-items-center justify-content-center">
         {% if not opponent_name or opponent_name|length == 0 %}
         <div>
             <p>Waiting for your friend (opponent)...</p>
@@ -44,13 +43,14 @@ Wait for other player
         </div>
         {% endif %}
     </div>
-    <div id="ready_update_button_container">
+    <div id="ready_update_button_container" class="row align-items-center justify-content-center">
         {% if opponent_name|length %}
+        <h3><b>{{opponent_name}}</b> has joined!</h3>
         <form action="{{ url_get_prepare }}" method="get">
             <button id="next_button"
                     class="btn btn-primary"
                     type="submit">
-                Next
+                Start
             </button>
         </form>
         {% else %}

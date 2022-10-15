@@ -13,6 +13,8 @@ COOKIE_SESSION_ID: str = "cookie_session_id"
 COOKIE_PLAYER_ID: str = "cookie_player_id"
 COOKIE_SHIP_ID: str = "cookie_ship_id"
 COOKIE_SHIP_DIRECTION: str = "cookie_ship_direction"
+COOKIE_LAST_URL: str = "cookie_last_url"
+COOKIE_LAST_PAGE: str = "cookie_last_page_name"
 
 FORM_PLAYER_NAME: str = "player_name"
 FORM_SESSION_ID: str = "session_id"

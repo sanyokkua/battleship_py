@@ -11,6 +11,13 @@ Add your ships to the board
 
 {% block body %}
 {{ super() }}
+{% set ship_size_1="⊡" %}
+{% set ship_size_2="⊡⊡" %}
+{% set ship_size_3="⊡⊡⊡" %}
+{% set ship_size_4="⊡⊡⊡⊡" %}
+{% set ship_size_5="⊡⊡⊡⊡⊡" %}
+{% set ship_direction_horizontal="⇨" %}
+{% set ship_direction_vertical="⇩" %}
 <div id="hidden_ship_forms">
     {% for ship in ships_list %}
     <form id="form_ship_id_{{loop.index0}}_vertical" action="{{ url_post_chose_ship }}" method="post">
@@ -49,7 +56,7 @@ Add your ships to the board
     {% endfor %}
     {% endfor %}
 </div>
-<div id="body_container" class="container-fluid">
+<div id="opponent_status_container" class="container-fluid">
     {% if opponent_status %}
     {% set badge_style="text-bg-success" %}
     {% set status_text="Ready" %}
@@ -58,88 +65,161 @@ Add your ships to the board
     {% set status_text="In Progress..." %}
     {% endif %}
     <div id="opponent_status_container_row" class="row">
-        <p><span class="text-primary">{{opponent_name}}</span> Status: <span class="badge {{badge_style}}">{{status_text}}</span></p>
+        <p><span class="text-primary">{{opponent_name}}</span> Status: <span class="badge {{badge_style}}">{{status_text}}</span>
+        </p>
     </div>
-    <div id="ships_and_field_container_row" class="row">
-        <div class="clearfix container-fluid text-center">
-            <div class="row">
-                <div id="ships_list" class="col-md-4 col-sm-6">
-                    <div id="ships_list_dropdowns" class="list-group">
+</div>
+<div id="body_container" class="container">
+    <div class="row align-items-center justify-content-center">
+        <div id="ships_list" class="col-md-4 col-sm-6">
+            <div class="container-fluid text-center">
+                <div class="row">
+                    <div class="col col-sm-3">
                         {% for ship in ships_list %}
                         {% if ship.ship_id == active_ship_id %}
-                        {% set active_color = "active" %}
+                        {% set is_selected_button = "btn btn-success btn-block" %}
                         {% else %}
-                        {% set active_color = "" %}
+                        {% set is_selected_button = "btn btn-outline-primary btn-block" %}
                         {% endif %}
-
-                        {% if ship.direction == "VERTICAL" %}
-                        {% set ship_direction_img = "bi bi bi-arrow-down" %}
+                        {% if ship.ship_size == 1 %}
+                        {% set ship_string = ship_size_1 %}
+                        {% elif ship.ship_size == 2 %}
+                        {% set ship_string = ship_size_2 %}
+                        {% elif ship.ship_size == 3 %}
+                        {% set ship_string = ship_size_3 %}
+                        {% elif ship.ship_size == 4 %}
+                        {% set ship_string = ship_size_4 %}
+                        {% elif ship.ship_size == 5 %}
+                        {% set ship_string = ship_size_5 %}
                         {% else %}
-                        {% set ship_direction_img = "bi bi bi-arrow-right" %}
+                        {% set ship_string = "ERROR" %}
                         {% endif %}
-                        <div class="dropdown">
-                            <button id="ship_dropdown_button_{{loop.index0}}"
-                                    class="list-group-item list-group-item-action {{ active_color }} dropdown-toggle text-sm-start"
+                        {% if ship.ship_size == 1 %}
+                        <button form="form_ship_id_{{loop.index0}}_horizontal"
+                                class="{{is_selected_button}}">
+                            <b>{{ship_string}}</b>
+                        </button>
+                        {% else %}
+                        <div class="btn-group" role="group">
+                            {% if ship.direction == "HORIZONTAL" %}
+                            {% set ship_direction_img = ship_direction_horizontal %}
+                            {% set text_color = "text-primary" %}
+                            {% else %}
+                            {% set ship_direction_img = ship_direction_vertical %}
+                            {% set text_color = "text-success" %}
+                            {% endif %}
+                            <button type="button" class="{{ is_selected_button }} dropdown-toggle"
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false">
-                                {% for i in range(ship.ship_size) %}
-                                <i class="bi bi-check-square-fill"></i>
-                                {% endfor %}
-                                <i class="{{ship_direction_img}}">{{ship.direction}}</i>
+                                <b>{{ship_string}} {{ship_direction_img}}</b>
                             </button>
                             <ul class="dropdown-menu">
-                                <li>
-                                    <button form="form_ship_id_{{loop.index0}}_horizontal" class="dropdown-item"><i
-                                            class="bi bi bi-arrow-right">Horizontal</i></button>
-                                </li>
-                                <li>
-                                    <button form="form_ship_id_{{loop.index0}}_vertical" class="dropdown-item"><i
-                                            class="bi bi bi-arrow-down">Vertical</i></button>
-                                </li>
+                                <button form="form_ship_id_{{loop.index0}}_horizontal"
+                                        class="dropdown-item">
+                                    {{ship_direction_horizontal}} Horizontal
+                                </button>
+                                <button form="form_ship_id_{{loop.index0}}_vertical"
+                                        class="dropdown-item" {{ is_hidden_direction_button }}>
+                                    {{ship_direction_vertical}} Vertical
+                                </button>
                             </ul>
                         </div>
+                        {% endif %}
                         {% endfor %}
                     </div>
+
                 </div>
-                <div id="board_cells_container" class="col-md-4 col-sm-6">
-                    <div id="board_cells" class="grid_div" >
-                        {% for row in field %}
-                        {% set row_index = loop.index0 %}
-                        {% for cell in row %}
-                        {% if cell.has_ship %}
-                        {% set btn_style = "btn-success" %}
-                        {% else %}
-                        {% set btn_style = "btn-outline-primary" %}
-                        {% endif %}
-                        {% if cell.is_not_available or (not cell.has_ship and ships_list|length == 0) %}
-                        {% set cell_is_disabled = "disabled" %}
-                        {% set btn_style = "bg-primary p-2 bg-opacity-50" %}
-                        {% else %}
-                        {% set cell_is_disabled = "" %}
-                        {% endif %}
-                        <button id="cell_button_{{row_index}}_{{loop.index0}}"
-                                form="form_cell_ship_{{row_index}}_{{loop.index0}}"
-                                class="col ratio ratio-1x1 border border-dark btn btn-sm btn-square-sm {{ btn_style }}"
-                                {{ cell_is_disabled }}></button>
-                        {% endfor %}
-                        {% endfor %}
-                    </div>
-                </div>
+            </div>
+
+            <!--            <div class="btn-group-vertical" role="group" aria-label="Vertical button group">-->
+            <!--                {% for ship in ships_list %}-->
+            <!--                {% if ship.ship_id == active_ship_id %}-->
+            <!--                {% set is_selected_button = "btn btn-success" %}-->
+            <!--                {% else %}-->
+            <!--                {% set is_selected_button = "btn btn-outline-primary" %}-->
+            <!--                {% endif %}-->
+            <!--                {% if ship.ship_size == 1 %}-->
+            <!--                {% set ship_string = ship_size_1 %}-->
+            <!--                {% elif ship.ship_size == 2 %}-->
+            <!--                {% set ship_string = ship_size_2 %}-->
+            <!--                {% elif ship.ship_size == 3 %}-->
+            <!--                {% set ship_string = ship_size_3 %}-->
+            <!--                {% elif ship.ship_size == 4 %}-->
+            <!--                {% set ship_string = ship_size_4 %}-->
+            <!--                {% elif ship.ship_size == 5 %}-->
+            <!--                {% set ship_string = ship_size_5 %}-->
+            <!--                {% else %}-->
+            <!--                {% set ship_string = "ERROR" %}-->
+            <!--                {% endif %}-->
+            <!--                {% if ship.ship_size == 1 %}-->
+            <!--                <button form="form_ship_id_{{loop.index0}}_horizontal"-->
+            <!--                        class="{{is_selected_button}}">-->
+            <!--                    <b>{{ship_string}} - Chose</b>-->
+            <!--                </button>-->
+            <!--                {% else %}-->
+            <!--                <div class="btn-group" role="group">-->
+            <!--                    {% if ship.direction == "HORIZONTAL" %}-->
+            <!--                    {% set ship_direction_img = ship_direction_horizontal %}-->
+            <!--                    {% set text_color = "text-primary" %}-->
+            <!--                    {% else %}-->
+            <!--                    {% set ship_direction_img = ship_direction_vertical %}-->
+            <!--                    {% set text_color = "text-success" %}-->
+            <!--                    {% endif %}-->
+            <!--                    <button type="button" class="{{ is_selected_button }} dropdown-toggle" data-bs-toggle="dropdown"-->
+            <!--                            aria-expanded="false">-->
+            <!--                        <b>{{ship_string}} {{ship_direction_img}}</b>-->
+            <!--                    </button>-->
+            <!--                    <ul class="dropdown-menu">-->
+            <!--                        <button form="form_ship_id_{{loop.index0}}_horizontal"-->
+            <!--                                class="dropdown-item">-->
+            <!--                            {{ship_direction_horizontal}}-->
+            <!--                        </button>-->
+            <!--                        <button form="form_ship_id_{{loop.index0}}_vertical"-->
+            <!--                                class="dropdown-item" {{ is_hidden_direction_button }}>-->
+            <!--                            {{ship_direction_vertical}}-->
+            <!--                        </button>-->
+            <!--                    </ul>-->
+            <!--                </div>-->
+            <!--                {% endif %}-->
+            <!--                {% endfor %}-->
+            <!--            </div>-->
+        </div>
+        <div id="board_cells_container" class="col-md-4 col-sm-6">
+            <div id="board_cells" class="grid_div">
+                {% for row in field %}
+                {% set row_index = loop.index0 %}
+                {% for cell in row %}
+                {% if cell.has_ship %}
+                {% set btn_style = "btn-success" %}
+                {% else %}
+                {% set btn_style = "btn-outline-primary" %}
+                {% endif %}
+                {% if cell.is_not_available or (not cell.has_ship and ships_list|length == 0) %}
+                {% set cell_is_disabled = "disabled" %}
+                {% set btn_style = "bg-primary p-2 bg-opacity-50" %}
+                {% else %}
+                {% set cell_is_disabled = "" %}
+                {% endif %}
+                <button id="cell_button_{{row_index}}_{{loop.index0}}"
+                        form="form_cell_ship_{{row_index}}_{{loop.index0}}"
+                        class="col ratio ratio-1x1 border border-dark btn btn-sm btn-square-sm {{ btn_style }}"
+                        {{ cell_is_disabled }}></button>
+                {% endfor %}
+                {% endfor %}
             </div>
         </div>
     </div>
-    <div id="ready_button_container" class="row">
-        {% if ships_list|length == 0 %}
-        {% set is_disabled="" %}
-        {% set ready_style="btn btn-success" %}
-        {% else %}
-        {% set is_disabled="disabled" %}
-        {% set ready_style="btn btn-secondary" %}
-        {% endif %}
-        <form action="{{ url_post_start }}" method="post">
-            <button type="submit" class="{{ready_style}}" {{ is_disabled }}>Ready</button>
-        </form>
-    </div>
 </div>
-
+<div id="ready_button_container" class="row">
+    {% if ships_list|length == 0 %}
+    {% set is_disabled="" %}
+    {% set ready_style="btn btn-success" %}
+    {% else %}
+    {% set is_disabled="disabled" %}
+    {% set ready_style="btn btn-secondary" %}
+    {% endif %}
+    <form action="{{ url_post_start }}" method="post">
+        <button type="submit" class="{{ready_style}}" {{ is_disabled }}>Ready</button>
+    </form>
+</div>
 {% endblock body %}

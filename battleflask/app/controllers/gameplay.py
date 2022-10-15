@@ -21,6 +21,8 @@ GAME_PLAY_CONTROLLER: flask.Blueprint = flask.Blueprint(
 @GAME_PLAY_CONTROLLER.route("/<string:session_id>/gameplay", methods=[const.METHOD_GET])
 def _get_session_gameplay_page(session_id: str) -> str | werkzeug.Response:
     cookies_player_id: str = request_utils.get_cookies_string(const.COOKIE_PLAYER_ID)
+    url_last: str = request_utils.get_cookies_string(const.COOKIE_LAST_URL)
+    page_name: str = request_utils.get_cookies_string(const.COOKIE_LAST_PAGE)
     log.debug("cookies_player_id: %s", cookies_player_id)
 
     validation.validate_is_not_empty_string(cookies_player_id, "cookies_player_id")
@@ -64,6 +66,8 @@ def _get_session_gameplay_page(session_id: str) -> str | werkzeug.Response:
         player_field=player_field,
         opponent_field=opponent_field,
         is_opponent_ready=is_opponent_ready,
+        url_last_page_url=url_last,
+        last_page_name=page_name
     )
 
 

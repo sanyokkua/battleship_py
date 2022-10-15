@@ -8,6 +8,7 @@ import battleflask.app.controllers.constants as const
 import battleflask.app.controllers.render_utils as render_utils
 import battleflask.app.controllers.request_utils as request_utils
 import battleflask.app.validation_utils as validation
+import battleflask.app.exceptions as ex
 
 log: logging.Logger = logging.getLogger(__name__)
 
@@ -22,6 +23,8 @@ GAME_COMMON_CONTROLLER: flask.Blueprint = flask.Blueprint(
 @GAME_COMMON_CONTROLLER.route("/<string:session_id>/wait", methods=[const.METHOD_GET])
 def _get_session_wait_page(session_id: str) -> str:
     current_player_id: str = request_utils.get_cookies_string(const.COOKIE_PLAYER_ID)
+    url_last: str = request_utils.get_cookies_string(const.COOKIE_LAST_URL)
+    page_name: str = request_utils.get_cookies_string(const.COOKIE_LAST_PAGE)
     log.debug("current_player_id: %s", current_player_id)
 
     validation.validate_is_not_empty_string(current_player_id, "current_player_id")
@@ -48,11 +51,38 @@ def _get_session_wait_page(session_id: str) -> str:
         session_id=session_id,
         player_name=player.player_name,
         opponent_name=opponent_name,
+        url_last_page_url=url_last,
+        last_page_name=page_name
     )
 
 
 @GAME_COMMON_CONTROLLER.route("/<string:session_id>/finish", methods=[const.METHOD_GET])
 def _get_session_finish_page(session_id: str) -> str:
+    cookies_player_id: str = request_utils.get_cookies_string(const.COOKIE_PLAYER_ID)
+    log.debug("current_player_id: %s", cookies_player_id)
+
+    validation.validate_is_not_empty_string(cookies_player_id, "current_player_id")
+    validation.validate_is_not_empty_string(
+        request_utils.get_cookies_string(const.COOKIE_SESSION_ID),
+        "check is in cookies: session_id",
+    )
     winner_player: dto.PlayerDto = ctx.GAME_API.get_winner(session_id)
     log.debug("winner: %s", winner_player)
-    return render_utils.render_finish_page(session_id, winner_player.player_name)
+
+    if winner_player is None:
+        raise ex.GameIsNotFinishedException("Winner information is not available!")
+
+    player: dto.PlayerDto = ctx.GAME_API.get_player_by_id(session_id, cookies_player_id)
+    opponent: dto.PlayerDto = ctx.GAME_API.get_opponent(session_id, player.player_id)
+    player_field: list[list] = ctx.GAME_API.get_field(session_id, cookies_player_id)
+    opponent_field: list[list] = ctx.GAME_API.get_field(
+        session_id, opponent.player_id, is_for_opponent=True
+    )
+    return render_utils.render_finish_page(
+        session_id,
+        winner_player_name=winner_player.player_name,
+        current_player_name=player.player_name,
+        opponent_name=opponent.player_name,
+        opponent_field=opponent_field,
+        player_field=player_field,
+    )

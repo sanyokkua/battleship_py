@@ -13,7 +13,56 @@ Game is finished
 <div id="player_information_container">
     <h2>Player <span class="badge text-bg-success">{{ winner_player_name }} </span> has win this game </h2>
 </div>
-<br/>
+<div id="fields_container" class="container-fluid text-center">
+    <div class="row align-items-center justify-content-center">
+        <div id="opponent_field_container" class="col text-center border-dark">
+            <p>Field of: <span class="badge text-bg-warning">{{ opponent_name }}</span></p>
+            <div id="opponent_field_cells" class="grid_div">
+                {% for row in opponent_field %}
+                {% set row_index = loop.index0 %}
+                {% for cell in row %}
+                {% if cell.has_ship and cell.has_shot %}
+                {% set btn_style = "btn-danger" %}
+                {% elif cell.has_ship %}
+                {% set btn_style = "btn-success" %}
+                {% elif cell.has_shot %}
+                {% set btn_style = "btn-secondary" %}
+                {% else %}
+                {% set btn_style = "btn-primary" %}
+                {% endif %}
+                <button id="opponent_cell_button_{{row_index}}_{{loop.index0}}"
+                        class="col ratio ratio-1x1 border border-dark btn btn-sm btn-square-sm {{ btn_style }}"
+                        disabled></button>
+                {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="row align-items-center justify-content-center">
+        <div id="player_field_container" class="col text-center">
+            <p>Field of: <span class="badge text-bg-primary">{{ current_player_name }}</span></p>
+            <div id="player_field_cells" class="grid_div">
+                {% for row in player_field %}
+                {% set row_index = loop.index0 %}
+                {% for cell in row %}
+                {% if cell.has_ship and cell.has_shot %}
+                {% set btn_style = "btn-danger" %}
+                {% elif cell.has_ship %}
+                {% set btn_style = "btn-success" %}
+                {% elif cell.has_shot %}
+                {% set btn_style = "btn-secondary" %}
+                {% else %}
+                {% set btn_style = "btn-primary" %}
+                {% endif %}
+                <button id="player_cell_button_{{row_index}}_{{loop.index0}}"
+                        class="col ratio ratio-1x1 border border-dark btn btn-sm btn-square-sm {{ btn_style }}"
+                        disabled></button>
+                {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
 <div id="link_to_main_page_container">
     <a class="btn btn-outline-primary" href="{{ url_get_index }}">Return to the main page</a>
 </div>

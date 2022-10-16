@@ -17,6 +17,7 @@ class InMemoryDbClient(types.DbClient):
     data_source: dict[str, dto.SessionStateDto]
 
     def __init__(self) -> None:
+        """Initialize in memory client."""
         self.data_source = {}
         log.debug("Datasource inited: %s", self.data_source)
 
@@ -56,7 +57,7 @@ class InMemoryDbClient(types.DbClient):
 
         Returns:
             bool: success of the operation. True - OK, session deleted, False - Failure
-                or session was already deleted or even never exist in the DB
+                or session was already deleted or even never exist in the DB.
         """
         try:
             log.debug("Removing session from data source: id=%s", session_id)

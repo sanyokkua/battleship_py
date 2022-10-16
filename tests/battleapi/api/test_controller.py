@@ -1,6 +1,5 @@
 from unittest.mock import MagicMock
 
-import db.in_memory_db_client as memory
 import pytest
 
 import battleapi.api.controller as c
@@ -10,6 +9,7 @@ import battleapi.logic.configs as cfg
 import battleapi.logic.exceptions as ex
 import battleapi.logic.models as models
 import battleapi.utils.id_generator as gen
+import db.in_memory_db_client as memory
 
 
 def create_real_controller():

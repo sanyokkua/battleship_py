@@ -8,7 +8,7 @@ ShipId = str
 
 @dataclasses.dataclass
 class Cell:
-    """_summary_"""
+    """Representation of the game cell."""
 
     ship_id: Union[str, None] = None
     has_ship: bool = False
@@ -20,11 +20,7 @@ Board = list[list[Cell]]
 
 
 class Direction(enum.Enum):
-    """_summary_
-
-    Args:
-        enum (_type_): _description_
-    """
+    """Representation of the ship direction."""
 
     HORIZONTAL = 0
     VERTICAL = 1
@@ -32,7 +28,7 @@ class Direction(enum.Enum):
 
 @dataclasses.dataclass
 class Ship:
-    """_summary_"""
+    """Representation of the ship."""
 
     ship_id: ShipId
     ship_size: int
@@ -40,11 +36,7 @@ class Ship:
 
 
 class ShipType(enum.Enum):
-    """_summary_
-
-    Args:
-        enum (_type_): _description_
-    """
+    """Representation of the ship type."""
 
     PatrolBoat = 0
     Submarine = 1
@@ -55,7 +47,7 @@ class ShipType(enum.Enum):
 
 @dataclasses.dataclass(unsafe_hash=True)
 class ShipConfig:
-    """_summary_"""
+    """Representation of the configuration of the ship."""
 
     ship_type: ShipType
     ship_size: int

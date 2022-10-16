@@ -1,3 +1,16 @@
+""""Preparation requests controller.
+
+Process requests to the next endpoints:
+    - GET base_url/game/<string:session_id>/prepare
+        Returns preparation page where players need to put ships on the board.
+    - POST base_url/game/<string:session_id>/prepare/addship
+        Adds ship to the player board and redirects to the preparation page.
+    - POST base_url/game/<string:session_id>/prepare/delship
+        Removes ship from the player board and redirects to the preparation page.
+    - POST base_url/game/<string:session_id>/prepare/chose
+        Chooses current ship that will be added to the board next and redirects to the
+            preparation page.
+"""
 import logging
 
 import flask
@@ -26,6 +39,14 @@ PREPARATION_CONTROLLER: flask.Blueprint = flask.Blueprint(
     "/<string:session_id>/prepare", methods=[const.METHOD_GET]
 )
 def _get_session_prepare_page(session_id: str) -> str:
+    """Return preparation page.
+
+    Args:
+        session_id (str): game session id.
+
+    Returns:
+        str: rendered preparation page.
+    """
     cookie_player_id: str = request_utils.get_cookies_string(const.COOKIE_PLAYER_ID)
     cookie_session_id: str = request_utils.get_cookies_string(const.COOKIE_SESSION_ID)
     cookie_ship_id: str = request_utils.get_cookies_string(const.COOKIE_SHIP_ID)
@@ -43,10 +64,12 @@ def _get_session_prepare_page(session_id: str) -> str:
     validation.validate_is_not_empty_string(cookie_player_id, "cookie_player_id")
     validation.validate_is_not_empty_string(cookie_session_id, "cookie_session_id")
 
-    player: dto.PlayerDto = ctx.GAME_API.get_player_by_id(session_id, cookie_player_id)
+    player: dto.PlayerDto | None = ctx.GAME_API.get_player_by_id(
+        session_id, cookie_player_id
+    )
     log.debug("Player: %s", player)
 
-    opponent: dto.PlayerDto = ctx.GAME_API.get_opponent_prepare_status(
+    opponent: dto.PlayerDto | None = ctx.GAME_API.get_opponent_prepare_status(
         session_id, cookie_player_id
     )
     log.debug("Opponent: %s", opponent)
@@ -92,6 +115,16 @@ def _get_session_prepare_page(session_id: str) -> str:
 
 
 def _get_ship_id(cookie_ship_id: str, ships: list[dto.ShipDto]) -> str:
+    """Get ship id from the list based on the current state.
+
+    Args:
+        cookie_ship_id (str): ship id that was chosen or empty string if no ships left.
+        ships (list[dto.ShipDto]): list of the player ships available for adding to the
+            board (field).
+
+    Returns:
+        str: ship id.
+    """
     ship_id_from_ships_list: str = utils.get_ship_id(ships)
     render_ship_id: str = (
         cookie_ship_id if len(cookie_ship_id) > 0 else ship_id_from_ships_list
@@ -100,6 +133,16 @@ def _get_ship_id(cookie_ship_id: str, ships: list[dto.ShipDto]) -> str:
 
 
 def _get_ship_direction(cookie_ship_direction: str, ships: list[dto.ShipDto]) -> str:
+    """Get ship direction based on the current state.
+
+    Args:
+        cookie_ship_direction (str): ship direction that was chosen or empty string.
+        ships (list[dto.ShipDto]): list of the player ships available for adding to the
+            board (field).
+
+    Returns:
+        str: ship direction.
+    """
     ship_direction: str = utils.get_ship_direction(ships)
     render_ship_direction: str = (
         cookie_ship_direction if len(cookie_ship_direction) > 0 else ship_direction
@@ -113,6 +156,14 @@ def _get_ship_direction(cookie_ship_direction: str, ships: list[dto.ShipDto]) ->
 def _post_session_prepare_addship_redirect_to_prepare_page(
     session_id: str,
 ) -> werkzeug.Response:
+    """Add ship to the board if it is possible and redirect to the preparation page.
+
+    Args:
+        session_id (str): game session.
+
+    Returns:
+        werkzeug.Response: Redirect to preparation page.
+    """
     cookies_session_id: str = request_utils.get_cookies_string(const.COOKIE_SESSION_ID)
     cookies_player_id: str = request_utils.get_cookies_string(const.COOKIE_PLAYER_ID)
     cookies_ship_id: str = request_utils.get_cookies_string(const.COOKIE_SHIP_ID)
@@ -161,7 +212,14 @@ def _post_session_prepare_addship_redirect_to_prepare_page(
 
 def _refresh_cookies_for_prepare_page(
     cookies_player_id: str, response: werkzeug.Response, session_id: str
-):
+) -> None:
+    """Update cookies values based on the current state of the preparation.
+
+    Args:
+        cookies_player_id (str): player id.
+        response (werkzeug.Response): Redirect response to update cookies.
+        session_id (str): game session id.
+    """
     player: dto.PlayerDto = ctx.GAME_API.get_player_by_id(session_id, cookies_player_id)
     ships_list: list[dto.ShipDto] = ctx.GAME_API.get_prepare_ships_list(
         session_id, cookies_player_id
@@ -181,6 +239,14 @@ def _refresh_cookies_for_prepare_page(
 def _post_session_prepare_delship_redirect_to_prepare_page(
     session_id: str,
 ) -> werkzeug.Response:
+    """Remove ship from the board and redirect to the preparation page.
+
+    Args:
+        session_id (str): game session.
+
+    Returns:
+        werkzeug.Response: Redirect to preparation page.
+    """
     cookies_player_id: str = request_utils.get_cookies_string(const.COOKIE_PLAYER_ID)
     cookies_session_id: str = request_utils.get_cookies_string(const.COOKIE_SESSION_ID)
     log.debug("cookies_player_id: %s", cookies_player_id)
@@ -216,6 +282,15 @@ def _post_session_prepare_delship_redirect_to_prepare_page(
 def _post_session_prepare_chose_ship_redirect_to_prepare_page(
     session_id: str,
 ) -> werkzeug.Response:
+    """Chose current ship that will be added to the board and redirect to preparation
+        page.
+
+    Args:
+        session_id (str): game session.
+
+    Returns:
+        werkzeug.Response: Redirect to preparation page.
+    """
     cookies_player_id: str = request_utils.get_cookies_string(const.COOKIE_PLAYER_ID)
     cookies_session_id: str = request_utils.get_cookies_string(const.COOKIE_SESSION_ID)
     log.debug("value of cookies_player_id: %s", cookies_player_id)

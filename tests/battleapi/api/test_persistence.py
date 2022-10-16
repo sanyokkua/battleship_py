@@ -1,10 +1,9 @@
 from unittest.mock import MagicMock
 
-import db.in_memory_db_client as memory
-
 import battleapi.api.dto as dto
 import battleapi.api.persistence as papi
 import battleapi.logic.configs as cfg
+import db.in_memory_db_client as memory
 
 
 class TestPersistenceApi:

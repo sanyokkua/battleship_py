@@ -1,8 +1,4 @@
-"""_summary_
-
-    Returns:
-        _type_: _description_
-"""
+"""Utility functions for requests."""
 import logging
 
 import flask
@@ -11,14 +7,14 @@ log: logging.Logger = logging.getLogger(__name__)
 
 
 def get_form_string(key: str, default_value: str = "") -> str:
-    """_summary_
+    """Retrieve string value from the form in request.
 
     Args:
-        key (str): _description_
-        default_value (str, optional): _description_. Defaults to "".
+        key (str): form input name.
+        default_value (str, optional): Default value if not found. Defaults to "".
 
     Returns:
-        str: _description_
+        str: string value for form key.
     """
     log.debug("key: %s, default: %s", key, default_value)
     # noinspection PyBroadException
@@ -32,14 +28,14 @@ def get_form_string(key: str, default_value: str = "") -> str:
 
 
 def get_form_int(key: str, default_value: int = -1) -> int:
-    """_summary_
+    """Retrieve integer value from the form in request.
 
     Args:
-        key (str): _description_
-        default_value (int, optional): _description_. Defaults to -1.
+        key (str): form input name.
+        default_value (int, optional): Default value if not found. Defaults to -1.
 
     Returns:
-        int: _description_
+        int: integer value for form key.
     """
     log.debug("key: %s, default: %d", key, default_value)
     # noinspection PyBroadException
@@ -53,14 +49,14 @@ def get_form_int(key: str, default_value: int = -1) -> int:
 
 
 def get_cookies_string(key: str, default_value: str = "") -> str:
-    """_summary_
+    """Retrieve string value from the user cookies in request.
 
     Args:
-        key (str): _description_
-        default_value (str, optional): _description_. Defaults to "".
+        key (str): cookie key
+        default_value (str, optional): Default value if not found. Defaults to "".
 
     Returns:
-        str: _description_
+        str: string value.
     """
     log.debug("key: %s, default: %s", key, default_value)
     # noinspection PyBroadException

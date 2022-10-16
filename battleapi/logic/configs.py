@@ -12,10 +12,9 @@ Size = int
 
 
 class GameType(enum.Enum):
-    """_summary_
+    """Type of the game.
 
-    Args:
-        enum (_type_): _description_
+    Based on the type of rules there are 2 types of game.
     """
 
     CLASSIC = 0
@@ -23,36 +22,36 @@ class GameType(enum.Enum):
 
 
 class GameConfiguration(abc.ABC):
-    """_summary_
+    """Abstract configuration representation.
 
     Args:
-        abc (_type_): _description_
+        abc (_type_): Inherited class.
 
     Returns:
-        _type_: _description_
+        _type_: GameConfiguration
     """
 
     @abc.abstractmethod
     def get_size_mapping(self) -> dict[models.ShipType, int]:
-        """_summary_
+        """Return mapping of the ShipType to its Size in cells amount.
 
         Returns:
-            dict[models.ShipType, int]: _description_
+            dict[models.ShipType, int]: ship_type to size map.
         """
 
     @abc.abstractmethod
     def get_amount_mapping(self) -> dict[models.ShipType, int]:
-        """_summary_
+        """Return mapping of the ShipType to its amount available for player.
 
         Returns:
-            dict[models.ShipType, int]: _description_
+            dict[models.ShipType, int]: ship_type to amount map.
         """
 
     def get_ship_configs(self) -> set[models.ShipConfig]:
-        """_summary_
+        """Return configuration collected on the ship sizes and ship amounts.
 
         Returns:
-            set[models.ShipConfig]: _description_
+            set[models.ShipConfig]: set of the ships.
         """
         list_of_ships: set[models.ShipConfig] = set()
         amount_mapping: dict[models.ShipType, Amount] = self.get_amount_mapping()
@@ -71,17 +70,19 @@ class GameConfiguration(abc.ABC):
 
 
 class ClassicGameConfiguration(GameConfiguration):
-    """_summary_
+    """Classic Game Configuration.
+
+    Ship sizes starts from 1 and ends with 4.
 
     Args:
-        config (_type_): _description_
+        config (_type_): GameConfiguration
     """
 
     def get_size_mapping(self) -> dict[models.ShipType, Size]:
-        """_summary_
+        """Return mapping of the ShipType to its Size in cells amount.
 
         Returns:
-            dict[models.ShipType, int]: _description_
+            dict[models.ShipType, int]: ship_type to size map.
         """
         return {
             models.ShipType.PatrolBoat: 1,
@@ -91,10 +92,10 @@ class ClassicGameConfiguration(GameConfiguration):
         }
 
     def get_amount_mapping(self) -> dict[models.ShipType, Amount]:
-        """_summary_
+        """Return mapping of the ShipType to its amount available for player.
 
         Returns:
-            dict[models.ShipType, int]: _description_
+            dict[models.ShipType, int]: ship_type to amount map.
         """
         return {
             models.ShipType.PatrolBoat: 4,
@@ -105,17 +106,19 @@ class ClassicGameConfiguration(GameConfiguration):
 
 
 class CustomGameConfiguration(GameConfiguration):
-    """_summary_
+    """Custom Game Configuration.
+
+    Ship sizes starts from 2 and ends with 5.
 
     Args:
-        config (_type_): _description_
+        config (_type_): GameConfiguration
     """
 
     def get_size_mapping(self) -> dict[models.ShipType, Size]:
-        """_summary_
+        """Return mapping of the ShipType to its Size in cells amount.
 
         Returns:
-            dict[models.ShipType, int]: _description_
+            dict[models.ShipType, int]: ship_type to size map.
         """
         return {
             models.ShipType.Submarine: 2,
@@ -125,10 +128,10 @@ class CustomGameConfiguration(GameConfiguration):
         }
 
     def get_amount_mapping(self) -> dict[models.ShipType, Amount]:
-        """_summary_
+        """Return mapping of the ShipType to its amount available for player.
 
         Returns:
-            dict[models.ShipType, int]: _description_
+            dict[models.ShipType, int]: ship_type to amount map.
         """
         return {
             models.ShipType.Submarine: 4,

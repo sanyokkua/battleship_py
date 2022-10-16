@@ -1,10 +1,7 @@
-"""_summary_
+"""Module contains logic of the game board.
 
 Raises:
-    ex.CellIsNotEmptyException: _description_
-
-Returns:
-    _type_: _description_
+    ex.CellIsNotEmptyException: raised on the tries to use occupied cell.
 """
 import logging
 from typing import Callable
@@ -24,23 +21,24 @@ Filter = Callable[[models.Cell], bool]
 
 
 class Board:
-    """_summary_
+    """Implementation of the game board logic.
 
     Raises:
-        ex.CellIsNotEmptyException: _description_
+        ex.CellIsNotEmptyException: Raised on the tries to use occupied cell.
 
     Returns:
-        _type_: _description_
+        _type_: Board
     """
 
     _board: models.Board
     _ships_on_board: dict[ShipId, CoordinateSet]
 
     def __init__(self, board: BoardOrNone = None) -> None:
-        """_summary_
+        """Initialization of the game board (field).
 
         Args:
-            board (BoardOrNone, optional): _description_. Defaults to None.
+            board (BoardOrNone, optional): If the game is loaded, new board will not be
+                created and passed board will be used. Defaults to None.
         """
         self._ships_on_board = {}
         if board is None:
@@ -58,14 +56,14 @@ class Board:
     def _create_ship_coordinates(
         coordinate: models.Coordinate, ship: models.Ship
     ) -> CoordinateSet:
-        """_summary_
+        """Creates ship coordinates for all cells based on the ship direction.
 
         Args:
-            coordinate (models.Coordinate): _description_
-            ship (models.Ship): _description_
+            coordinate (models.Coordinate): base (or first) coordinate.
+            ship (models.Ship): ship that requires coordinates to be created.
 
         Returns:
-            CoordinateSet: _description_
+            CoordinateSet: set of coordinates from 1 to 5.
         """
         coordinates: CoordinateSet = set()
         row, col = coordinate
@@ -83,13 +81,13 @@ class Board:
     def _create_neighbour_coordinates(
         ship_coordinates: CoordinateCollection,
     ) -> CoordinateSet:
-        """_summary_
+        """Creates neighbour coordinates for the passed ship coordinates.
 
         Args:
-            ship_coordinates (CoordinateCollection): _description_
+            ship_coordinates (CoordinateCollection): ship coordinates.
 
         Returns:
-            _type_: _description_
+            set: set of coordinates of neighbours around the ship coordinates.
         """
         coordinates: CoordinateSet = set()
         for coordinate in ship_coordinates:
@@ -100,13 +98,16 @@ class Board:
         return coordinates
 
     def _validate_coordinates(self, coordinates: CoordinateCollection) -> None:
-        """_summary_
+        """Validation of the all coordinates.
+
+        Validates that coordinate in the field (10x10).
+        Validates that coordinate doesn't have a ship already.
 
         Args:
-            coordinates (CoordinateCollection): _description_
+            coordinates (CoordinateCollection): coordinates.
 
         Raises:
-            ex.CellIsNotEmptyException: _description_
+            ex.CellIsNotEmptyException: raised if coordinate already has ship.
         """
         for coordinate in coordinates:
             utils.validate_coordinate(coordinate)
@@ -118,11 +119,11 @@ class Board:
         log.debug("origin: %s", coordinates)
 
     def add_ship(self, coordinate: models.Coordinate, ship: models.Ship) -> None:
-        """_summary_
+        """Add ship to the board.
 
         Args:
-            coordinate (models.Coordinate): _description_
-            ship (models.Ship): _description_
+            coordinate (models.Coordinate): Ship base coordinate.
+            ship (models.Ship): Ship.
         """
         ship_coordinates: CoordinateSet = self._create_ship_coordinates(
             coordinate, ship
@@ -149,13 +150,13 @@ class Board:
         self._ships_on_board[ship.ship_id] = ship_coordinates
 
     def remove_ship(self, coordinate: models.Coordinate) -> ShipId | None:
-        """_summary_
+        """Remove ship from the board (field).
 
         Args:
-            coordinate (models.Coordinate): _description_
+            coordinate (models.Coordinate): Any of the ship coordinates (if many)
 
         Returns:
-            Union[ShipId, None]: _description_
+            Union[ShipId, None]: ship_id if coordinate had ship or None
         """
         utils.validate_coordinate(coordinate)
         row, col = coordinate
@@ -177,13 +178,13 @@ class Board:
         return None
 
     def make_shot(self, coordinate: models.Coordinate) -> bool:
-        """_summary_
+        """Make shot.
 
         Args:
-            coordinate (models.Coordinate): _description_
+            coordinate (models.Coordinate): coordinate where shot should be done.
 
         Returns:
-            bool: _description_
+            bool: True if the was hit.
         """
         utils.validate_coordinate(coordinate)
         row, col = coordinate
@@ -195,13 +196,15 @@ class Board:
         return cell.has_ship
 
     def get_board(self, is_hidden: bool = False) -> models.Board:
-        """_summary_
+        """Return game board.
 
         Args:
-            is_hidden (bool, optional): _description_. Defaults to False.
+            is_hidden (bool, optional): If board requested for by opponent
+            (display on UI) - this parameter will hide not hit ships.
+            Defaults to False.
 
         Returns:
-            models.Board: _description_
+            models.Board: Game Board.
         """
         log.debug("is_hidden: %s", is_hidden)
         field_to_return: models.Board = []
@@ -224,29 +227,29 @@ class Board:
         return field_to_return
 
     def get_amount_of_not_shot_cells(self) -> int:
-        """_summary_
+        """Return amount of the cells without shot.
 
         Returns:
-            int: _description_
+            int: number of cells.
         """
         return self._count_amount(lambda cell: not cell.has_shot)
 
     def get_amount_of_alive_ships(self) -> int:
-        """_summary_
+        """Returns number of cells with ships without hit.
 
         Returns:
-            int: _description_
+            int: amount of cells.
         """
         return self._count_amount(lambda cell: not cell.has_shot and cell.has_ship)
 
     def _count_amount(self, cell_filter: Filter) -> int:
-        """_summary_
+        """Utility method to count cells by criteria filter.
 
         Args:
-            cell_filter (Callable[[models.Cell], bool]): _description_
+            cell_filter (Callable[[models.Cell], bool]): filter.
 
         Returns:
-            int: _description_
+            int: amount of cells.
         """
         count: int = 0
         for row in self._board:
@@ -258,10 +261,12 @@ class Board:
 
     # noinspection Assert
     def _process_cells_after_shot(self, coordinate: models.Coordinate) -> None:
-        """_summary_
+        """Recalculate board state when shot was made.
+
+        Add shots to the empty cell around destroyed ship.
 
         Args:
-            coordinate (models.Coordinate): _description_
+            coordinate (models.Coordinate): coordinate of shot.
         """
         row, col = coordinate
         cell = self._board[row][col]

@@ -1,3 +1,4 @@
+"""Context module. Has public constants."""
 import db.in_memory_db_client as db_client
 
 import battleapi.abstract as abstract

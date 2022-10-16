@@ -1,14 +1,13 @@
-"""_summary_
+"""Utility functions used to help with validation etc.
 
 Raises:
-    ex.IncorrectPlayerIdException: _description_
-    ex.IncorrectStringException: _description_
-    ex.CoordinateException: _description_
-    ex.CoordinateException: _description_
-    ex.ObjectIsNoneException: _description_
+    ex.IncorrectPlayerIdException: raised if the player is not correct.
+    ex.IncorrectStringException: raised if the string is empty.
+    ex.CoordinateException: raised if the coordinate out of bounds.
+    ex.ObjectIsNoneException: raised if the passed object is None.
 
 Returns:
-    _type_: _description_
+    _type_: module
 """
 import logging
 from typing import Union
@@ -22,13 +21,13 @@ SIZE_VERTICAL: int = 10
 
 
 def validate_player_id(player_id: str) -> None:
-    """_summary_
+    """Check if player id is valid.
 
     Args:
-        player_id (str): _description_
+        player_id (str): player id.
 
     Raises:
-        ex.IncorrectPlayerIdException: _description_
+        ex.IncorrectPlayerIdException: raised if player id is not correct.
     """
     log.debug("Player id: %s", player_id)
     if (
@@ -40,13 +39,13 @@ def validate_player_id(player_id: str) -> None:
 
 
 def validate_not_empty_string(value: str) -> None:
-    """_summary_
+    """Check if the value is not empty string.
 
     Args:
-        value (str): _description_
+        value (str): passed string.
 
     Raises:
-        ex.IncorrectStringException: _description_
+        ex.IncorrectStringException: raised if the string is not valid.
     """
     log.debug("Player id: %s", value)
     if value is None or not isinstance(value, str) or len(value.strip()) == 0:
@@ -54,14 +53,13 @@ def validate_not_empty_string(value: str) -> None:
 
 
 def validate_coordinate(coordinate: tuple[int, int]) -> None:
-    """_summary_
+    """Check if coordinate has row and column in the field 10x10.
 
     Args:
-        coordinate (models.Coordinate): _description_
+        coordinate (models.Coordinate): Coordinate to check.
 
     Raises:
-        ex.CoordinateException: _description_
-        ex.CoordinateException: _description_
+        ex.CoordinateException: raised if the coordinate out of bounds.
     """
     log.debug("coordinate: %s", coordinate)
     row, column = coordinate
@@ -72,14 +70,14 @@ def validate_coordinate(coordinate: tuple[int, int]) -> None:
 
 
 def validate_is_not_none(obj: Union[object, None], obj_name: str = "") -> None:
-    """_summary_
+    """Check if the project is not None.
 
     Args:
-        obj (Union[object, None]): _description_
-        obj_name (str, optional): _description_. Defaults to "".
+        obj (Union[object, None]): object to check.
+        obj_name (str, optional): Name of the object that is validated. Defaults to "".
 
     Raises:
-        ex.ObjectIsNoneException: _description_
+        ex.ObjectIsNoneException: raised if the object is None.
     """
     log.debug("obj: %s", obj)
     if obj is None:
@@ -89,13 +87,13 @@ def validate_is_not_none(obj: Union[object, None], obj_name: str = "") -> None:
 def get_neighbour_coordinates(
     current_coordinate: tuple[int, int],
 ) -> set[tuple[int, int]]:
-    """_summary_
+    """Find neighbour coordinates for the passed coordinate.
 
     Args:
-        current_coordinate (models.Coordinate): _description_
+        current_coordinate (models.Coordinate): initial coordinate.
 
     Returns:
-        set[models.Coordinate]: _description_
+        set[models.Coordinate]: coordinates around the current coordinate.
     """
     row, column = current_coordinate
     coordinate_modifiers: set[tuple[int, int]] = {

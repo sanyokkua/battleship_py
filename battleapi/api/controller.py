@@ -13,6 +13,17 @@ log: logging.Logger = logging.getLogger(__name__)
 
 
 def index_board(board_dto: list[list[dto.CellDto]]) -> list[list[dto.CellDto]]:
+    """Add indexes (row, col) to the game field cell.
+
+    Initial Cell that is created during game initialization doesn't have information
+    about row and column. In this method this information will be added.
+
+    Args:
+        board_dto (list[list[dto.CellDto]]): Original Game Field.
+
+    Returns:
+        list[list[dto.CellDto]]: New list with cell that have coordinates.
+    """
     indexed_board: list[list[dto.CellDto]] = []
     for row_index, row in enumerate(board_dto):
         indexed_row: list[dto.CellDto] = []
@@ -35,6 +46,14 @@ class GameControllerApi(abstract.GameController):
     def __init__(
         self, persistence: abstract.GamePersistence, id_generator: abstract.IdGenerator
     ) -> None:
+        """Initialization of the Controller class.
+
+        Args:
+            persistence (abstract.GamePersistence): persistence that will be used to
+                store game session information.
+            id_generator (abstract.IdGenerator): generator for creating identifiers for
+                players, game_sessions, etc.
+        """
         self.persistence: abstract.GamePersistence = persistence
         self.id_generator: abstract.IdGenerator = id_generator
         log.debug("Inited: pers: s%, gen: %s", persistence, id_generator)
@@ -95,6 +114,14 @@ class GameControllerApi(abstract.GameController):
         )
 
     def _save_game_session(self, game_session, session_id) -> None:
+        """Save game session.
+
+        Utility method to create session state dto and save it.
+
+        Args:
+            game_session (_type_): Game Session object.
+            session_id (_type_): Unique session id.
+        """
         self.persistence.save_session(
             session_id,
             dto.SessionStateDto(
@@ -107,6 +134,20 @@ class GameControllerApi(abstract.GameController):
         log.debug("Game Session is Saved")
 
     def _load_game_session(self, session_id: str) -> game.Game:
+        """Load game session.
+
+        Utility method to load session state dto and create Game object based on the
+        loaded information.
+
+        Args:
+            session_id (str): Unique session id.
+
+        Raises:
+            ex.SessionIsNotCreatedException: Raised if session is not found.
+
+        Returns:
+            game.Game: Game Session object.
+        """
         session: dto.SessionStateDto | None = self.persistence.load_session(session_id)
         if session is None:
             log.debug("Game Session is not found: %s", session_id)
@@ -128,7 +169,7 @@ class GameControllerApi(abstract.GameController):
         Args:
             session_id (str): session id of the existing session.
             current_player_id (str): value of the player who needs to get information
-                of the opponent
+                of the opponent.
 
         Returns:
             dto.PlayerDto: opponent player information object.

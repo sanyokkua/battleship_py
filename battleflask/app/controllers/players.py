@@ -1,3 +1,11 @@
+""""Players requests controller.
+
+Process requests to the next endpoints:
+    - POST base_url/game/start
+        Create new game started by a player and redirects to the wait page.
+    - POST base_url/game/join
+        Join player to started game and redirects to the preparation page.
+"""
 import logging
 
 import flask
@@ -20,6 +28,11 @@ PLAYERS_CONTROLLER: flask.Blueprint = flask.Blueprint(
 
 @PLAYERS_CONTROLLER.route("/start", methods=[const.METHOD_POST])
 def _post_start_redirect_to_wait_page() -> werkzeug.Response:
+    """Start game session and redirect to the wait page.
+
+    Returns:
+        werkzeug.Response: Redirect to the wait page.
+    """
     player_name: str = request_utils.get_form_string(const.FORM_PLAYER_NAME)
     log.debug("player_name: %s", player_name)
 
@@ -50,6 +63,11 @@ def _post_start_redirect_to_wait_page() -> werkzeug.Response:
 
 @PLAYERS_CONTROLLER.route("/join", methods=[const.METHOD_POST])
 def _post_join_redirect_to_prepare_page() -> werkzeug.Response:
+    """Join the game and redirect to preparation page.
+
+    Returns:
+        werkzeug.Response: Redirect to preparation page.
+    """
     player_name: str = request_utils.get_form_string(const.FORM_PLAYER_NAME)
     session_id: str = request_utils.get_form_string(const.FORM_SESSION_ID)
     log.debug("player_name: %s", player_name)

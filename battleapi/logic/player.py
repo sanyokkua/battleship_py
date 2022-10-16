@@ -1,3 +1,4 @@
+"""Player info module."""
 import dataclasses
 
 import battleapi.logic.board as board
@@ -6,7 +7,7 @@ import battleapi.logic.models as models
 
 @dataclasses.dataclass
 class Player:
-    """_summary_"""
+    """Representation of the player in the game."""
 
     player_id: str
     player_name: str

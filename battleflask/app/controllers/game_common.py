@@ -1,3 +1,13 @@
+"""Game common requests controller.
+
+Process requests to the next endpoints:
+    - GET base_url/game/<string:session_id>/wait
+        Returns page with wait for player information.
+    - GET base_url/game/<string:session_id>/finish
+        Returns page with game results information.
+Raises:
+    ex.GameIsNotFinishedException: raised when winner was requested before game finished.
+"""
 import logging
 
 import flask
@@ -22,6 +32,14 @@ GAME_COMMON_CONTROLLER: flask.Blueprint = flask.Blueprint(
 
 @GAME_COMMON_CONTROLLER.route("/<string:session_id>/wait", methods=[const.METHOD_GET])
 def _get_session_wait_page(session_id: str) -> str:
+    """Return wait page.
+
+    Args:
+        session_id (str): game session id
+
+    Returns:
+        str: rendered template of wait page.
+    """
     current_player_id: str = request_utils.get_cookies_string(const.COOKIE_PLAYER_ID)
     url_last: str = request_utils.get_cookies_string(const.COOKIE_LAST_URL)
     page_name: str = request_utils.get_cookies_string(const.COOKIE_LAST_PAGE)
@@ -58,6 +76,17 @@ def _get_session_wait_page(session_id: str) -> str:
 
 @GAME_COMMON_CONTROLLER.route("/<string:session_id>/finish", methods=[const.METHOD_GET])
 def _get_session_finish_page(session_id: str) -> str:
+    """Return game result page.
+
+    Args:
+        session_id (str): game session id.
+
+    Raises:
+        ex.GameIsNotFinishedException: raised if the game is not finished.
+
+    Returns:
+        str: rendered template of the finish page.
+    """
     cookies_player_id: str = request_utils.get_cookies_string(const.COOKIE_PLAYER_ID)
     log.debug("current_player_id: %s", cookies_player_id)
 

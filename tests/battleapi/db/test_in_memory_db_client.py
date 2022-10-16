@@ -1,5 +1,5 @@
 import battleapi.logic.configs as cc
-import db.in_memory_db_client as client
+import battleapi.db.in_memory_db_client as client
 from battleapi.api.dto import SessionStateDto
 
 

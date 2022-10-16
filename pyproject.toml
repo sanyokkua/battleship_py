@@ -5,12 +5,14 @@ description = "Classic board game for 2 players"
 authors = ["Oleksandr Kostenko <sanyokkua@gmail.com>"]
 license = "GPL-3.0"
 readme = "README.md"
-packages = [{include = "battleapi"}]
+packages = [
+    {include = "battleapi"},
+    {include = "battleflask"}
+]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.11"
 Flask = "^2.2.2"
-Flask-RESTful = "^0.3.9"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -37,3 +39,6 @@ pre-commit = "^2.20.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+battleships = "battleflask.flask_app:run_app"  #Should create a script to run QT6 version of the Game

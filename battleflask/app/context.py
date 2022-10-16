@@ -1,9 +1,8 @@
 """Context module. Has public constants."""
-import db.in_memory_db_client as db_client
-
 import battleapi.abstract as abstract
 import battleapi.api.controller as controller
 import battleapi.api.persistence as persistence
+import battleapi.db.in_memory_db_client as db_client
 import battleapi.utils.id_generator as id_generator
 
 IN_MEMORY_DB_CLIENT: abstract.DbClient = db_client.InMemoryDbClient()

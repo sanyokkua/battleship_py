@@ -14,7 +14,6 @@ log: logging.Logger = logging.getLogger(__name__)
 
 FLASK_APP: flask.Flask = flask.Flask(__name__)
 configure_flask_app(FLASK_APP)
-# FLASK_APP.logger = log
 
 
 def run_app(debug=False, host="0.0.0.0") -> None:

@@ -9,7 +9,7 @@ import battleapi.logic.configs as cfg
 import battleapi.logic.exceptions as ex
 import battleapi.logic.models as models
 import battleapi.utils.id_generator as gen
-import db.in_memory_db_client as memory
+import battleapi.db.in_memory_db_client as memory
 
 
 def create_real_controller():

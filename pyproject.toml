@@ -41,4 +41,4 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-battleships = "battleflask.flask_app:run_app"  #Should create a script to run QT6 version of the Game
+battleships = "battleflask.flask_app:run_app"

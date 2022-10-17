@@ -36,7 +36,7 @@ It is an education project to learn Python as a language, try python tools for b
 - Programming Language: Python 3.10.7 (All development was made on the Mac OS X)
 - Web Framework: [Flask 2.2.2](https://flask.palletsprojects.com/en/2.2.x/)
 - Html lib: [Bootstrap 5.2](https://getbootstrap.com/docs/5.2/getting-started/introduction/)
-- Dependency management: [Poetry](https://python-poetry.org/)
+- Dependency management: [Poetry](https://python-poetry.org/). Required version **1.2.0+**
 
 # How this game looks like
 
@@ -137,19 +137,23 @@ Total coverage by tests of the battleapi module is 99%
 
 1. Open Terminal on your OS
 2. Navigate to the folder with this app
-
-```shell
-cd /path/to/the/root/of/battleship_py
-```
+  ```shell
+  cd /path/to/the/root/of/battleship_py
+  ```
 3. Create virtual environment for Python if you want to have all the dependencies preinstalled inside app directory.
-   Poetry will automatically create virtual environment, but if you create one inside app folder - poetry will use this
-   instead its default.
+Poetry will automatically create virtual environment, but if you create one inside app folder - poetry will use this instead its default. **(OPTIONAL)**
 
 ```shell
 python3 -m venv .venv 
 ```
 
-4. To check that everything is ok - you can run tests with coverage
+4. Install dependencies by poetry
+
+```shell
+poetry install
+```
+
+5. To check that everything is ok - you can run tests with coverage
 
 ```shell
 poetry run coverage run -m pytest  # To run tests and create coverage file
@@ -159,17 +163,17 @@ poetry run coverage report  # To generate report of coverage
 poetry run coverage html  # To generate html report of coverage
 ```
 
-5. Install dependencies by poetry
-
-```shell
-poetry install
-```
-
 6. After installation, you should now have ability to start application via entry points created in the scope of
    installation script
 
 ```shell
-export FLASK_APP_KEY='YOUR_SECRET_APP_KEY'
+# UNIX: Linux, Mac OS X, etc
+export FLASK_APP_KEY='YOUR_SECRET_APP_KEY' 
+poetry run battleships
+```
+```shell
+# Windows (Tested on Windows 10 Pro)
+SET FLASK_APP_KEY='YOUR_SECRET_APP_KEY'
 poetry run battleships
 ```
 
@@ -203,4 +207,5 @@ It will build **tar.gz** and **.whl** packages
 
 In this project there are plans to add:
 - Error handling for any exception that can be raised during gameplay
+- Direct link for joining
 - Other languages to UI

@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 .idea
 .vscode
+
+# Mac OS tmp files
+.DS_Store
